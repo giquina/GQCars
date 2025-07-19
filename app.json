@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "GQCars",
+    "slug": "gqcars",
+    "version": "1.0.0",
+    "sdkVersion": "53.0.0",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "icon": "./assets/icon.svg",
+    "userInterfaceStyle": "light",
+    "scheme": "gqcars",
+    "splash": {
+      "backgroundColor": "#00C851",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gqcars.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.svg",
+        "backgroundColor": "#00C851"
+      },
+      "package": "com.gqcars.app"
+    },
+    "web": {
+      "favicon": "./assets/icon.svg",
+      "bundler": "metro"
+    },
+    "plugins": [
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "PORTRAIT_UP"
+        }
+      ]
+    ]
+  }
+}

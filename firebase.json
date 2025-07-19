@@ -1,0 +1,72 @@
+{
+  "react-native": {
+    "android_app_id": "com.gqcars.android",
+    "ios_app_id": "com.gqcars.ios"
+  },
+  "project_info": {
+    "project_id": "gqcars-app",
+    "project_number": "123456789012",
+    "storage_bucket": "gqcars-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789012:android:abc123def456",
+        "android_client_info": {
+          "package_name": "com.gqcars"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "123456789012-abc123def456.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABC123DEF456GHI789JKL012MNO345PQR"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123456789012-abc123def456.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:123456789012:ios:abc123def456",
+        "ios_client_info": {
+          "bundle_id": "com.gqcars"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "123456789012-abc123def456.apps.googleusercontent.com",
+          "client_type": 2
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABC123DEF456GHI789JKL012MNO345PQR"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "123456789012-abc123def456.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

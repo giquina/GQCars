@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-07-19T17:11:38.731Z",
+  "checks": {
+    "fileStructure": {
+      "status": "healthy",
+      "message": "All required files present",
+      "missingFiles": []
+    },
+    "packageJson": {
+      "status": "healthy",
+      "message": "Package.json is valid",
+      "missingDependencies": [],
+      "versionConflicts": []
+    },
+    "screenFiles": {
+      "status": "healthy",
+      "message": "All screen files are valid",
+      "issues": []
+    },
+    "webServer": {
+      "status": "unhealthy",
+      "message": "Connection error: "
+    }
+  },
+  "overall": "warning"
+}

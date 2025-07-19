@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-07-19T16:48:56.446Z",
+  "tests": {
+    "File Structure": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    },
+    "Package.json Validation": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    },
+    "Screen Files Syntax": {
+      "status": "passed",
+      "duration": 1,
+      "message": "Test completed successfully"
+    },
+    "Navigation Flow": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    },
+    "Web Compatibility": {
+      "status": "failed",
+      "error": "Metro config missing react-native-web alias",
+      "message": "Test failed: Metro config missing react-native-web alias"
+    },
+    "Theme Consistency": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    },
+    "Error Handling": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    },
+    "Security Features": {
+      "status": "passed",
+      "duration": 0,
+      "message": "Test completed successfully"
+    }
+  },
+  "summary": {
+    "total": 8,
+    "passed": 7,
+    "failed": 1,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="48" viewBox="0 0 120 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="48" rx="12" fill="#1a1a1a"/>
+  <g>
+    <text x="16" y="34" font-family="'Montserrat', Arial, sans-serif" font-size="32" font-weight="bold" fill="#D4AF37">GQ</text>
+    <path d="M60 38 Q65 28 80 28 Q95 28 100 38" stroke="#D4AF37" stroke-width="2.5" fill="none"/>
+    <rect x="75" y="22" width="18" height="7" rx="3.5" fill="#D4AF37"/>
+    <circle cx="78" cy="36" r="2.5" fill="#D4AF37"/>
+    <circle cx="93" cy="36" r="2.5" fill="#D4AF37"/>
+    <polygon points="60,18 65,10 70,18" fill="#D4AF37"/>
+  </g>
+  <text x="50" y="46" font-family="'Montserrat', Arial, sans-serif" font-size="10" fill="#cccccc">CARS</text>
+</svg>
