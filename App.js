@@ -11,6 +11,11 @@ import NewHomeScreen from './screens/NewHomeScreen';
 import RideSelectionScreen from './screens/RideSelectionScreen';
 import DriverConnectionScreen from './screens/DriverConnectionScreen';
 import AccountScreen from './screens/AccountScreen';
+import PaymentMethodScreen from './screens/PaymentMethodScreen';
+import AddPaymentMethodScreen from './screens/AddPaymentMethodScreen';
+import PaymentConfirmationScreen from './screens/PaymentConfirmationScreen';
+import EmergencyScreen from './screens/EmergencyScreen';
+import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
 import theme from './theme';
 import notificationService from './services/NotificationService';
 
@@ -176,6 +181,26 @@ export default function App() {
         <Stack.Screen 
           name="DriverConnection" 
           component={DriverConnectionScreen}
+        />
+        <Stack.Screen 
+          name="PaymentMethod" 
+          component={PaymentMethodScreen}
+        />
+        <Stack.Screen 
+          name="AddPaymentMethod" 
+          component={AddPaymentMethodScreen}
+        />
+        <Stack.Screen 
+          name="PaymentConfirmation" 
+          component={PaymentConfirmationScreen}
+        />
+        <Stack.Screen 
+          name="Emergency" 
+          component={EmergencyScreen}
+        />
+        <Stack.Screen 
+          name="EmergencyContacts" 
+          component={EmergencyContactsScreen}
         />
         {/* Legacy routes for backwards compatibility */}
         <Stack.Screen 
