@@ -1,4 +1,5 @@
-import messaging from '@react-native-firebase/messaging';
+// Temporarily disabled React Native Firebase for Expo Go compatibility
+// import messaging from '@react-native-firebase/messaging';
 import { Platform, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -67,23 +68,13 @@ class NotificationService {
 
   /**
    * Request notification permission from user
+   * Temporarily simplified for Expo Go compatibility
    */
   async requestPermission() {
     try {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      if (enabled) {
-        console.log('Notification permission granted');
-        await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_ENABLED, 'true');
-        return true;
-      } else {
-        console.log('Notification permission denied');
-        await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_ENABLED, 'false');
-        return false;
-      }
+      console.log('Notification permission granted (simulated for Expo Go)');
+      await AsyncStorage.setItem(STORAGE_KEYS.NOTIFICATION_ENABLED, 'true');
+      return true;
     } catch (error) {
       console.error('Error requesting notification permission:', error);
       return false;
@@ -92,32 +83,18 @@ class NotificationService {
 
   /**
    * Get FCM token for this device
+   * Temporarily simplified for Expo Go compatibility
    */
   async getFCMToken() {
     try {
-      // Check if we already have a token stored
-      const storedToken = await AsyncStorage.getItem(STORAGE_KEYS.FCM_TOKEN);
+      // Simulate FCM token for Expo Go
+      const simulatedToken = 'expo-go-simulation-token-' + Math.random().toString(36).substr(2, 9);
+      this.fcmToken = simulatedToken;
       
-      // Get current token from Firebase
-      const token = await messaging().getToken();
+      await AsyncStorage.setItem(STORAGE_KEYS.FCM_TOKEN, simulatedToken);
+      console.log('FCM Token simulated for Expo Go:', simulatedToken);
       
-      if (token) {
-        this.fcmToken = token;
-        
-        // Update stored token if it's different
-        if (storedToken !== token) {
-          await AsyncStorage.setItem(STORAGE_KEYS.FCM_TOKEN, token);
-          console.log('FCM Token updated:', token);
-          
-          // TODO: Send token to your backend server
-          await this.sendTokenToServer(token);
-        }
-        
-        return token;
-      } else {
-        console.log('No FCM token available');
-        return null;
-      }
+      return simulatedToken;
     } catch (error) {
       console.error('Error getting FCM token:', error);
       return null;
@@ -154,49 +131,21 @@ class NotificationService {
 
   /**
    * Set up notification listeners for foreground messages
+   * Temporarily simplified for Expo Go compatibility
    */
   setupNotificationListeners() {
-    // Listen for foreground messages
-    this.foregroundListener = messaging().onMessage(async (remoteMessage) => {
-      console.log('Foreground message received:', remoteMessage);
-      await this.handleForegroundNotification(remoteMessage);
-    });
-
-    // Listen for notification tap when app is in background
-    this.backgroundListener = messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log('Background notification tapped:', remoteMessage);
-      this.handleNotificationTap(remoteMessage);
-    });
-
-    // Check if app was opened from a notification when it was completely closed
-    messaging()
-      .getInitialNotification()
-      .then((remoteMessage) => {
-        if (remoteMessage) {
-          console.log('App opened from notification:', remoteMessage);
-          this.handleNotificationTap(remoteMessage);
-        }
-      });
-
-    // Listen for token refresh
-    messaging().onTokenRefresh((token) => {
-      console.log('FCM token refreshed:', token);
-      this.fcmToken = token;
-      AsyncStorage.setItem(STORAGE_KEYS.FCM_TOKEN, token);
-      this.sendTokenToServer(token);
-    });
+    console.log('Notification listeners set up (simulated for Expo Go)');
+    // Listeners are disabled for Expo Go compatibility
+    // Real implementation would use messaging().onMessage(), etc.
   }
 
   /**
    * Set up background message handler
+   * Temporarily simplified for Expo Go compatibility
    */
   setupBackgroundMessageHandler() {
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      console.log('Background message received:', remoteMessage);
-      // Handle background messages here
-      // Note: You can't show alerts or navigate in background handler
-      await this.processBackgroundMessage(remoteMessage);
-    });
+    console.log('Background message handler set up (simulated for Expo Go)');
+    // Background handler is disabled for Expo Go compatibility
   }
 
   /**

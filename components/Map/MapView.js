@@ -13,11 +13,12 @@ const GQMapView = ({
   onLocationSelect,
   ...props 
 }) => {
+  // Default to London, UK for GQCars (can be changed to your preferred default)
   const [region, setRegion] = useState({
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+    latitude: 51.5074,  // London, UK
+    longitude: -0.1278,
+    latitudeDelta: 0.15,  // Wider view to show more area
+    longitudeDelta: 0.15,
   });
   const [userLocation, setUserLocation] = useState(null);
   const [locationPermission, setLocationPermission] = useState(false);
@@ -52,11 +53,11 @@ const GQMapView = ({
 
       setUserLocation(userCoords);
       
-      // Update region to user's location
+      // Update region to user's location with wider view
       const newRegion = {
         ...userCoords,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.08,  // More zoomed out to show surrounding area
+        longitudeDelta: 0.08,
       };
       setRegion(newRegion);
 

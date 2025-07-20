@@ -8,6 +8,8 @@ import {
   ScrollView,
   Image,
   Modal,
+  Dimensions,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
@@ -16,6 +18,8 @@ import theme from '../theme';
 
 const AccountScreen = ({ navigation }) => {
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const { width } = Dimensions.get('window');
+  const isTablet = width > 768;
   
   const userData = {
     name: 'John Doe',
@@ -29,48 +33,89 @@ const AccountScreen = ({ navigation }) => {
     securityRides: 24,
   };
 
+  const handleMenuPress = (action, params = {}) => {
+    switch (action) {
+      case 'myOrders':
+        // Navigate to existing ride history or show alert
+        Alert.alert('Trip History', 'View your recent security transport trips', [
+          { text: 'OK', style: 'default' }
+        ]);
+        break;
+      case 'payment':
+        navigation.navigate('PaymentMethod');
+        break;
+      case 'share':
+        Alert.alert('Invite Friends', 'Share GQCars with friends and earn rewards!', [
+          { text: 'Share', onPress: () => console.log('Share pressed') },
+          { text: 'Cancel', style: 'cancel' }
+        ]);
+        break;
+      case 'notifications':
+        setShowNotificationSettings(true);
+        break;
+      case 'promotions':
+        Alert.alert('Promotions', 'No active promotions at the moment. Check back soon!', [
+          { text: 'OK', style: 'default' }
+        ]);
+        break;
+      case 'settings':
+        Alert.alert('Settings', 'App settings and preferences', [
+          { text: 'OK', style: 'default' }
+        ]);
+        break;
+      case 'logout':
+        Alert.alert('Log Out', 'Are you sure you want to log out?', [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Log Out', style: 'destructive', onPress: () => console.log('Logged out') }
+        ]);
+        break;
+      default:
+        console.log('Menu action not implemented:', action);
+    }
+  };
+
   const menuItems = [
     {
       id: 1,
-      title: 'My orders',
+      title: 'Trip History',
       icon: 'receipt-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => navigation.navigate('MyOrders'),
+      onPress: () => handleMenuPress('myOrders'),
     },
     {
       id: 2,
-      title: 'Payment',
+      title: 'Payment Methods',
       icon: 'card-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => navigation.navigate('Payment'),
+      onPress: () => handleMenuPress('payment'),
     },
     {
       id: 3,
-      title: 'Tell your friend',
+      title: 'Invite Friends',
       icon: 'share-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => {},
+      onPress: () => handleMenuPress('share'),
     },
     {
       id: 4,
       title: 'Notifications',
       icon: 'notifications-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => setShowNotificationSettings(true),
+      onPress: () => handleMenuPress('notifications'),
     },
     {
       id: 5,
-      title: 'Promotion',
-      icon: 'gift-outline',
+      title: 'Emergency Contacts',
+      icon: 'people-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => navigation.navigate('Promotions'),
+      onPress: () => navigation.navigate('EmergencyContacts'),
     },
     {
       id: 6,
-      title: 'Setting',
-      icon: 'settings-outline',
+      title: 'Security Settings',
+      icon: 'shield-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => navigation.navigate('Settings'),
+      onPress: () => handleMenuPress('settings'),
     },
     {
       id: 7,
@@ -78,7 +123,7 @@ const AccountScreen = ({ navigation }) => {
       icon: 'log-out-outline',
       rightIcon: null,
       textColor: theme.colors.error,
-      onPress: () => {},
+      onPress: () => handleMenuPress('logout'),
     },
   ];
 
@@ -129,7 +174,11 @@ const AccountScreen = ({ navigation }) => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Account</Text>
-          <TouchableOpacity onPress={() => setShowNotificationSettings(true)}>
+          <TouchableOpacity 
+            style={styles.headerNotificationBtn}
+            onPress={() => setShowNotificationSettings(true)}
+            activeOpacity={0.7}
+          >
             <Ionicons name="notifications-outline" size={24} color={theme.colors.text} />
           </TouchableOpacity>
         </View>
@@ -143,8 +192,12 @@ const AccountScreen = ({ navigation }) => {
               <Text style={styles.profileEmail}>{userData.email}</Text>
               <Text style={styles.profilePhone}>{userData.phone}</Text>
             </View>
-            <TouchableOpacity style={styles.editButton}>
-              <Ionicons name="pencil-outline" size={20} color={theme.colors.textSecondary} />
+            <TouchableOpacity 
+              style={styles.editButton}
+              activeOpacity={0.7}
+              onPress={() => Alert.alert('Edit Profile', 'Profile editing functionality')}
+            >
+              <Ionicons name="pencil-outline" size={20} color={theme.colors.surface} />
             </TouchableOpacity>
           </View>
         </Card>
@@ -183,22 +236,27 @@ const AccountScreen = ({ navigation }) => {
               <Text style={styles.balanceLabel}>Account Balance</Text>
               <Text style={styles.balanceAmount}>${userData.balance.toFixed(2)}</Text>
             </View>
-            <TouchableOpacity style={styles.addMoneyButton}>
+            <TouchableOpacity 
+              style={styles.addMoneyButton}
+              activeOpacity={0.8}
+              onPress={() => Alert.alert('Add Money', 'Add funds to your account balance')}
+            >
               <Ionicons name="add" size={20} color={theme.colors.surface} />
               <Text style={styles.addMoneyText}>Add Money</Text>
             </TouchableOpacity>
           </View>
         </Card>
 
-        <View style={styles.contentContainer}>
+        <View style={[styles.contentContainer, isTablet && styles.contentContainerTablet]}>
           {/* Menu Section */}
-          <View style={styles.leftColumn}>
+          <View style={[styles.leftColumn, isTablet && styles.leftColumnTablet]}>
             <Text style={styles.sectionTitle}>Menu</Text>
             {menuItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
                 style={styles.menuItem}
                 onPress={item.onPress}
+                activeOpacity={0.7}
               >
                 <View style={styles.menuLeft}>
                   <View style={styles.menuIcon}>
@@ -227,10 +285,19 @@ const AccountScreen = ({ navigation }) => {
           </View>
 
           {/* My Rides Section */}
-          <View style={styles.rightColumn}>
+          <View style={[styles.rightColumn, isTablet && styles.rightColumnTablet]}>
             <Text style={styles.sectionTitle}>Recent safe trips</Text>
             {recentRides.map((ride) => (
-              <Card key={ride.id} style={styles.rideCard} elevation="sm">
+              <TouchableOpacity
+                key={ride.id}
+                activeOpacity={0.7}
+                onPress={() => Alert.alert('Trip Details', `View details for trip to ${ride.destination}`, [
+                  { text: 'Rate Trip', onPress: () => console.log('Rate trip') },
+                  { text: 'View Details', onPress: () => console.log('View details') },
+                  { text: 'Close', style: 'cancel' }
+                ])}
+              >
+                <Card style={styles.rideCard} elevation="sm">
                 <View style={styles.rideHeader}>
                   <Image source={{ uri: ride.driverPhoto }} style={styles.driverPhoto} />
                   <View style={styles.rideInfo}>
@@ -261,10 +328,15 @@ const AccountScreen = ({ navigation }) => {
                     ))}
                   </View>
                 </View>
-              </Card>
+                </Card>
+              </TouchableOpacity>
             ))}
             
-            <TouchableOpacity style={styles.viewAllButton}>
+            <TouchableOpacity 
+              style={styles.viewAllButton}
+              activeOpacity={0.7}
+              onPress={() => handleMenuPress('myOrders')}
+            >
               <Text style={styles.viewAllText}>View all rides</Text>
               <Ionicons name="chevron-forward-outline" size={16} color={theme.colors.primary} />
             </TouchableOpacity>
@@ -295,12 +367,21 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    backgroundColor: theme.colors.background,
   },
   headerTitle: {
-    ...theme.typography.headlineMedium,
+    ...theme.typography.headlineLarge,
     color: theme.colors.text,
-    fontWeight: '600',
+    fontWeight: '700',
+  },
+  headerNotificationBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.gray100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   profileCard: {
     marginHorizontal: theme.spacing.lg,
@@ -336,12 +417,20 @@ const styles = {
     marginTop: 2,
   },
   editButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.gray100,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: theme.colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -408,15 +497,25 @@ const styles = {
     marginLeft: 4,
   },
   contentContainer: {
-    flexDirection: 'row',
     paddingHorizontal: theme.spacing.lg,
+  },
+  contentContainerTablet: {
+    flexDirection: 'row',
     gap: theme.spacing.lg,
   },
   leftColumn: {
+    marginBottom: theme.spacing.xl,
+  },
+  leftColumnTablet: {
     flex: 1,
+    marginBottom: 0,
   },
   rightColumn: {
+    marginBottom: theme.spacing.xl,
+  },
+  rightColumnTablet: {
     flex: 1,
+    marginBottom: 0,
   },
   sectionTitle: {
     ...theme.typography.titleLarge,
@@ -428,17 +527,29 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gray100,
+    paddingVertical: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   menuLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   menuIcon: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.colors.gray50,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: theme.spacing.md,

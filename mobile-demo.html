@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GQCars Mobile Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f5f5f5;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #00C851;
+        }
+        
+        /* Onboarding Question Styles */
+        .question-container {
+            padding: 20px;
+        }
+        
+        .question-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .question-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            background: #6A5ACD;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+        }
+        
+        .question-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        
+        .question-subtitle {
+            font-size: 13px;
+            color: #666;
+            line-height: 18px;
+        }
+        
+        .question-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 22px;
+        }
+        
+        /* Options Grid - Mobile Optimized */
+        .options-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        
+        .option-chip {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            border: 1.5px solid #e0e0e0;
+            min-width: 47%;
+            max-width: 47%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-chip:hover {
+            border-color: #6A5ACD;
+            box-shadow: 0 4px 8px rgba(106, 90, 205, 0.15);
+        }
+        
+        .option-chip-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            text-align: center;
+        }
+        
+        .option-chip-text {
+            font-size: 12px;
+            color: #1a1a1a;
+            font-weight: 500;
+            line-height: 15px;
+        }
+        
+        /* Service Selection Styles */
+        .services-container {
+            padding: 20px;
+        }
+        
+        .service-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+        
+        .service-row {
+            background: white;
+            border-radius: 16px;
+            border-left: 4px solid #4CAF50;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        
+        .service-row-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+        }
+        
+        .service-row-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .service-row-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            background: rgba(76, 175, 80, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: #4CAF50;
+            font-size: 24px;
+        }
+        
+        .service-row-info {
+            flex: 1;
+        }
+        
+        .service-row-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        
+        .service-row-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 16px;
+        }
+        
+        .service-row-right {
+            text-align: right;
+        }
+        
+        .service-row-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: #00C851;
+            margin-bottom: 4px;
+        }
+        
+        /* Location Input Styles */
+        .location-inputs {
+            padding: 20px;
+        }
+        
+        .input-row {
+            display: flex;
+            align-items: center;
+            background: #f8f8f8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .input-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: #00C851;
+        }
+        
+        .input-content {
+            flex: 1;
+        }
+        
+        .input-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        .input-value {
+            font-size: 16px;
+            color: #1a1a1a;
+        }
+        
+        /* Button Styles */
+        .btn {
+            background: #00C851;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .btn-disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 380px) {
+            .option-chip {
+                min-width: 100%;
+                max-width: 100%;
+            }
+            
+            .options-grid {
+                flex-direction: column;
+            }
+        }
+        
+        /* Test sections */
+        .section {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+        
+        .section-title {
+            background: #f0f0f0;
+            padding: 10px 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">GQCars</div>
+            <button style="background: none; border: 1px solid #ccc; padding: 8px 16px; border-radius: 8px;">Skip</button>
+        </div>
+        
+        <!-- Onboarding Question Section -->
+        <div class="section">
+            <div class="section-title">Onboarding Question Example</div>
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-icon">🛡️</div>
+                    <div class="question-title">Threat Assessment Level</div>
+                    <div class="question-subtitle">This determines your security protocol</div>
+                </div>
+                
+                <div class="question-text">What best describes your current threat level?</div>
+                
+                <div class="options-grid">
+                    <div class="option-chip">
+                        <div class="option-chip-content">
+                            <div class="option-chip-text">Minimal Risk - General Precaution</div>
+                        </div>
+                    </div>
+                    <div class="option-chip">
+                        <div class="option-chip-content">
+                            <div class="option-chip-text">Moderate Risk - Business Executive</div>
+                        </div>
+                    </div>
+                    <div class="option-chip">
+                        <div class="option-chip-content">
+                            <div class="option-chip-text">Elevated Risk - Public Figure</div>
+                        </div>
+                    </div>
+                    <div class="option-chip">
+                        <div class="option-chip-content">
+                            <div class="option-chip-text">High Risk - Specific Threats Known</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Selection Section -->
+        <div class="section">
+            <div class="section-title">Service Selection Example</div>
+            <div class="services-container">
+                <div class="service-title">Choose Your Service</div>
+                
+                <div class="service-row">
+                    <div class="service-row-content">
+                        <div class="service-row-left">
+                            <div class="service-row-icon">🚗</div>
+                            <div class="service-row-info">
+                                <div class="service-row-name">Standard</div>
+                                <div class="service-row-description">Licensed SIA security officer</div>
+                            </div>
+                        </div>
+                        <div class="service-row-right">
+                            <div class="service-row-price">£6.50</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-row" style="border-left-color: #FF9800;">
+                    <div class="service-row-content">
+                        <div class="service-row-left">
+                            <div class="service-row-icon" style="background: rgba(255, 152, 0, 0.2); color: #FF9800;">🏎️</div>
+                            <div class="service-row-info">
+                                <div class="service-row-name">Executive</div>
+                                <div class="service-row-description">Premium SIA officer transport</div>
+                            </div>
+                        </div>
+                        <div class="service-row-right">
+                            <div class="service-row-price">£10.50</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="service-row" style="border-left-color: #2196F3;">
+                    <div class="service-row-content">
+                        <div class="service-row-left">
+                            <div class="service-row-icon" style="background: rgba(33, 150, 243, 0.2); color: #2196F3;">🚌</div>
+                            <div class="service-row-info">
+                                <div class="service-row-name">XL</div>
+                                <div class="service-row-description">Large vehicle SIA officer</div>
+                            </div>
+                        </div>
+                        <div class="service-row-right">
+                            <div class="service-row-price">£7.20</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Input Section -->
+        <div class="section">
+            <div class="section-title">Location Input Example</div>
+            <div class="location-inputs">
+                <div class="input-row">
+                    <div class="input-icon">📍</div>
+                    <div class="input-content">
+                        <div class="input-label">Pickup Location</div>
+                        <div class="input-value">Tap to set pickup location</div>
+                    </div>
+                </div>
+                
+                <div class="input-row">
+                    <div class="input-icon">📍</div>
+                    <div class="input-content">
+                        <div class="input-label">Drop-off Location</div>
+                        <div class="input-value">Where are you going?</div>
+                    </div>
+                </div>
+                
+                <button class="btn">Book Standard - £12.50</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add click interactions
+        document.querySelectorAll('.option-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.option-chip').forEach(c => c.style.borderColor = '#e0e0e0');
+                this.style.borderColor = '#6A5ACD';
+                this.style.background = 'rgba(106, 90, 205, 0.05)';
+            });
+        });
+        
+        document.querySelectorAll('.service-row').forEach(row => {
+            row.addEventListener('click', function() {
+                document.querySelectorAll('.service-row').forEach(r => r.style.background = 'white');
+                this.style.background = 'rgba(0, 200, 81, 0.05)';
+            });
+        });
+        
+        // Log viewport info for debugging
+        console.log('Viewport:', window.innerWidth, 'x', window.innerHeight);
+        console.log('Device pixel ratio:', window.devicePixelRatio);
+    </script>
+</body>
+</html>

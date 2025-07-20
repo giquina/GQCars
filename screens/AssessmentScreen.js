@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import SecurityAssessmentService from '../services/SecurityAssessmentService';
 
 const AssessmentScreen = ({ navigation, route }) => {
 
@@ -20,62 +21,62 @@ const AssessmentScreen = ({ navigation, route }) => {
   const questions = [
     {
       id: 1,
-      question: "What is your primary reason for requiring security transport?",
+      question: "What is your primary security transport requirement?",
       options: [
-        { value: "executive", label: "Executive Protection", risk: 3 },
-        { value: "diplomatic", label: "Diplomatic Mission", risk: 5 },
-        { value: "personal", label: "Personal Security Concern", risk: 2 },
-        { value: "event", label: "High-Profile Event", risk: 4 },
+        { value: "executive", label: "Executive/VIP Protection Services", risk: 4 },
+        { value: "diplomatic", label: "Diplomatic/Government Transport", risk: 5 },
+        { value: "corporate", label: "Corporate Travel Security", risk: 3 },
+        { value: "personal", label: "Personal Safety & Discretion", risk: 2 },
       ]
     },
     {
       id: 2,
-      question: "Have you received any recent security threats?",
+      question: "Have you experienced any security incidents or received threats?",
       options: [
-        { value: "none", label: "No known threats", risk: 1 },
-        { value: "verbal", label: "Verbal threats received", risk: 3 },
-        { value: "written", label: "Written/digital threats", risk: 4 },
-        { value: "physical", label: "Physical intimidation", risk: 5 },
+        { value: "none", label: "No known threats or incidents", risk: 1 },
+        { value: "suspicious", label: "Suspicious activity or surveillance", risk: 3 },
+        { value: "verbal", label: "Verbal threats or harassment", risk: 4 },
+        { value: "physical", label: "Physical threats or attempted incidents", risk: 5 },
       ]
     },
     {
       id: 3,
-      question: "What is the nature of your public profile?",
+      question: "What best describes your current threat assessment level?",
       options: [
-        { value: "private", label: "Private individual", risk: 1 },
-        { value: "business", label: "Business executive", risk: 2 },
-        { value: "public", label: "Public figure", risk: 4 },
-        { value: "celebrity", label: "High-profile celebrity/politician", risk: 5 },
+        { value: "minimal", label: "Minimal risk - General precaution", risk: 1 },
+        { value: "moderate", label: "Moderate risk - Business executive", risk: 3 },
+        { value: "elevated", label: "Elevated risk - Public figure", risk: 4 },
+        { value: "high", label: "High risk - Specific threats known", risk: 5 },
       ]
     },
     {
       id: 4,
-      question: "Which areas will you be traveling to?",
+      question: "What types of locations do you typically travel to?",
       options: [
-        { value: "low", label: "Low-risk residential areas", risk: 1 },
-        { value: "commercial", label: "Commercial districts", risk: 2 },
-        { value: "high_traffic", label: "High-traffic public areas", risk: 3 },
-        { value: "high_risk", label: "Known high-risk locations", risk: 5 },
+        { value: "secure", label: "Secure facilities & private venues", risk: 1 },
+        { value: "commercial", label: "Commercial districts & business centers", risk: 2 },
+        { value: "public", label: "Public venues & high-traffic areas", risk: 3 },
+        { value: "high_risk", label: "High-risk or unfamiliar locations", risk: 5 },
       ]
     },
     {
       id: 5,
-      question: "What time of day will most travel occur?",
+      question: "When do you typically require secure transport?",
       options: [
-        { value: "day", label: "Daytime hours (9 AM - 6 PM)", risk: 1 },
-        { value: "evening", label: "Evening hours (6 PM - 10 PM)", risk: 2 },
-        { value: "night", label: "Night hours (10 PM - 6 AM)", risk: 3 },
-        { value: "varied", label: "Varied/unpredictable times", risk: 4 },
+        { value: "business_hours", label: "Business hours (9 AM - 5 PM)", risk: 1 },
+        { value: "extended_hours", label: "Extended hours (6 AM - 10 PM)", risk: 2 },
+        { value: "late_night", label: "Late night/early morning hours", risk: 4 },
+        { value: "unpredictable", label: "Unpredictable/emergency basis", risk: 5 },
       ]
     },
     {
       id: 6,
-      question: "How many people will require protection?",
+      question: "How many individuals typically travel in your security detail?",
       options: [
-        { value: "solo", label: "Just myself", risk: 1 },
-        { value: "small", label: "2-3 people", risk: 2 },
-        { value: "medium", label: "4-6 people", risk: 3 },
-        { value: "large", label: "7+ people", risk: 4 },
+        { value: "individual", label: "Individual client only", risk: 1 },
+        { value: "small_group", label: "2-3 people (family/small team)", risk: 2 },
+        { value: "medium_group", label: "4-6 people (larger team/entourage)", risk: 3 },
+        { value: "large_group", label: "7+ people (full delegation/event group)", risk: 4 },
       ]
     }
   ];
@@ -91,7 +92,7 @@ const AssessmentScreen = ({ navigation, route }) => {
     }
   };
 
-  const calculateRiskAndProceed = (finalAnswers) => {
+  const calculateRiskAndProceed = async (finalAnswers) => {
     const totalRisk = Object.values(finalAnswers).reduce((sum, answer) => sum + answer.risk, 0);
     const maxRisk = questions.length * 5;
     const riskPercentage = (totalRisk / maxRisk) * 100;
@@ -100,13 +101,31 @@ const AssessmentScreen = ({ navigation, route }) => {
     if (riskPercentage > 70) riskLevel = 'HIGH';
     else if (riskPercentage > 40) riskLevel = 'MEDIUM';
 
-    navigation.navigate('Booking', {
-      service,
+    // Mark assessment as completed
+    const assessmentData = {
       riskLevel,
       riskScore: totalRisk,
       riskPercentage: Math.round(riskPercentage),
-      answers: finalAnswers
-    });
+      answers: finalAnswers,
+      completedAt: new Date().toISOString()
+    };
+    
+    await SecurityAssessmentService.markCompleted(assessmentData);
+
+    // Show completion message and navigate back
+    Alert.alert(
+      'Assessment Complete',
+      `Security profile created successfully.\n\nRisk Level: ${riskLevel}\nYou can now book your secure transport.`,
+      [
+        {
+          text: 'Continue',
+          onPress: () => {
+            // Navigate back to the previous screen
+            navigation.goBack();
+          }
+        }
+      ]
+    );
   };
 
   const goBack = () => {
@@ -134,20 +153,25 @@ const AssessmentScreen = ({ navigation, route }) => {
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
         <Text style={styles.progressText}>
-          Question {currentQuestion + 1} of {questions.length}
+          Question {currentQuestion + 1} of {availableQuestions.length}
         </Text>
+        {Object.keys(onboardingData).length > 0 && (
+          <Text style={styles.onboardingNote}>
+            {Object.keys(onboardingData).length} questions answered during onboarding
+          </Text>
+        )}
       </View>
 
       <ScrollView style={styles.content}>
         <View style={styles.questionContainer}>
           <Ionicons name="shield-checkmark" size={40} color="#D4AF37" style={styles.questionIcon} />
           <Text style={styles.questionText}>
-            {questions[currentQuestion].question}
+            {availableQuestions[currentQuestion]?.question}
           </Text>
         </View>
 
         <View style={styles.optionsContainer}>
-          {questions[currentQuestion].options.map((option, index) => (
+          {availableQuestions[currentQuestion]?.options.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={styles.optionButton}
@@ -225,24 +249,73 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   optionsContainer: {
-    marginTop: 20,
+    marginTop: 24,
+    paddingHorizontal: 4,
   },
   optionButton: {
     backgroundColor: '#2a2a2a',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 15,
+    padding: 18,
+    borderRadius: 16,
+    marginBottom: 12,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: '#333333',
+    minHeight: 64,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#ffffff',
     flex: 1,
-    marginRight: 10,
+    marginRight: 16,
+    lineHeight: 20,
+    fontWeight: '500',
+    paddingTop: 2,
+  },
+  onboardingNote: {
+    fontSize: 12,
+    color: '#D4AF37',
+    textAlign: 'center',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  completedContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 32,
+  },
+  completedTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  completedText: {
+    fontSize: 16,
+    color: '#cccccc',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  continueButton: {
+    backgroundColor: '#00C851',
+    paddingHorizontal: 32,
+    paddingVertical: 16,
+    borderRadius: 12,
+  },
+  continueButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 });
 

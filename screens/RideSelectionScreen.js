@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,13 @@ import {
   StatusBar,
   Dimensions,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import EmergencyButton from '../components/ui/EmergencyButton';
+import SecurityAssessmentService from '../services/SecurityAssessmentService';
 import theme from '../theme';
 
 const { width, height } = Dimensions.get('window');
@@ -48,14 +50,39 @@ const rideOptions = [
 
 const RideSelectionScreen = ({ navigation, route }) => {
   const [selectedRide, setSelectedRide] = useState(rideOptions[1]); // Default to Normal
+  const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const { destination } = route.params || {};
 
   const handleSelectRide = () => {
+    if (!assessmentCompleted) {
+      Alert.alert(
+        'Security Assessment Required', 
+        'Please complete your security assessment before booking.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Start Assessment', onPress: () => navigation.navigate('Assessment') }
+        ]
+      );
+      return;
+    }
+    
     navigation.navigate('DriverConnection', {
       selectedRide,
       destination,
     });
   };
+
+  useEffect(() => {
+    // Listen for assessment completion changes
+    const unsubscribe = SecurityAssessmentService.addListener((status) => {
+      setAssessmentCompleted(status.isCompleted);
+    });
+
+    // Initial check
+    setAssessmentCompleted(SecurityAssessmentService.isAssessmentCompleted());
+
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,7 +126,13 @@ const RideSelectionScreen = ({ navigation, route }) => {
         <Text style={styles.chooseRideTitle}>Choose your ride</Text>
         <Text style={styles.chooseRideSubtitle}>All drivers are licensed security professionals</Text>
         
-        <ScrollView showsVerticalScrollIndicator={false} style={styles.ridesContainer}>
+        
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          style={styles.ridesContainer}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+        >
           {rideOptions.map((ride) => (
             <TouchableOpacity
               key={ride.id}
@@ -151,9 +184,12 @@ const RideSelectionScreen = ({ navigation, route }) => {
 
         {/* Select Ride Button */}
         <Button
-          title="Book Safe Transport"
+          title={assessmentCompleted ? "Book Safe Transport" : "Complete Assessment to Book"}
           onPress={handleSelectRide}
-          style={styles.selectButton}
+          style={[
+            styles.selectButton,
+            !assessmentCompleted && styles.selectButtonDisabled
+          ]}
         />
       </View>
     </SafeAreaView>
@@ -261,6 +297,8 @@ const styles = {
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.gray200,
+    minHeight: 80,
+    ...theme.shadows.sm,
   },
   rideCardSelected: {
     borderColor: theme.colors.primary,
@@ -291,6 +329,8 @@ const styles = {
   },
   rideInfo: {
     flex: 1,
+    marginRight: theme.spacing.sm,
+    justifyContent: 'center',
   },
   rideName: {
     ...theme.typography.titleMedium,
@@ -309,6 +349,8 @@ const styles = {
   },
   rideRight: {
     alignItems: 'flex-end',
+    justifyContent: 'center',
+    minWidth: 80,
   },
   ridePrice: {
     ...theme.typography.titleLarge,
@@ -336,6 +378,10 @@ const styles = {
   },
   selectButton: {
     backgroundColor: theme.colors.text,
+  },
+  selectButtonDisabled: {
+    backgroundColor: theme.colors.gray400,
+    opacity: 0.6,
   },
 };
 
