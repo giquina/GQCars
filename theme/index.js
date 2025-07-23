@@ -30,13 +30,21 @@ const colors = {
   gray800: '#424242',
   gray900: '#212121',
   
-  // Status colors
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#F44336',
-  info: '#2196F3',
-  
-  // Emergency colors
+  // Status colors - Enhanced for better accessibility
+  success: '#10B981',
+  successLight: '#34D399',
+  successDark: '#059669',
+  warning: '#F59E0B',
+  warningLight: '#FBBF24',
+  warningDark: '#D97706',
+  error: '#EF4444',
+  errorLight: '#F87171',
+  errorDark: '#DC2626',
+  info: '#3B82F6',
+  infoLight: '#60A5FA',
+  infoDark: '#2563EB',
+
+  // Emergency colors - More prominent
   emergency: '#DC2626',
   emergencyDark: '#B91C1C',
   emergencyLight: '#EF4444',
