@@ -20,71 +20,89 @@ const { width, height } = Dimensions.get('window');
 const onboardingData = [
   {
     id: 1,
-    title: 'When Safety Matters Most',
-    subtitle: 'Late nights, high-value meetings, unfamiliar areas – some journeys need more than just a ride. You need a trained security professional who understands protection.',
-    icon: 'shield-checkmark-outline',
+    title: '🌙 When Safety Matters Most',
+    subtitle: 'Late nights, high-value meetings, unfamiliar areas – some journeys need more than just a ride.',
+    description: 'You need a trained security professional who understands protection.',
+    icon: 'shield-checkmark',
     color: theme.colors.primary,
-    type: 'info'
+    gradient: [theme.colors.primary, theme.colors.primaryDark],
+    type: 'info',
+    stats: '24/7 Protection',
+    highlight: 'Professional Security'
   },
   {
     id: 2,
-    title: 'SIA Licensed Security Officers',
-    subtitle: 'Every driver is a vetted close protection officer with professional security training. Get executive-level protection at everyday prices.',
-    icon: 'person-circle-outline',
+    title: '🎖️ SIA Licensed Security Officers',
+    subtitle: 'Every driver is a vetted close protection officer with professional security training.',
+    description: 'Get executive-level protection at everyday prices.',
+    icon: 'person-circle',
     color: '#FF6B35',
-    type: 'info'
+    gradient: ['#FF6B35', '#FF8A5C'],
+    type: 'info',
+    stats: '100% Licensed',
+    highlight: 'Vetted Professionals'
   },
   {
     id: 3,
-    title: 'Book Instantly, Travel Securely',
-    subtitle: 'Professional security transport in just a few taps. Premium protection without the premium price tag. Your safety, simplified.',
-    icon: 'car-outline',
+    title: '🚗 Book Instantly, Travel Securely',
+    subtitle: 'Professional security transport in just a few taps.',
+    description: 'Premium protection without the premium price tag. Your safety, simplified.',
+    icon: 'car-sport',
     color: '#2E8B57',
-    type: 'info'
+    gradient: ['#2E8B57', '#3CB371'],
+    type: 'info',
+    stats: 'Instant Booking',
+    highlight: 'Premium Protection'
   },
   {
     id: 4,
-    title: 'Your Security Profile',
+    title: '🛡️ Your Security Profile',
     subtitle: 'Help us understand your protection requirements',
-    icon: 'shield-outline',
+    description: 'This helps us match you with the right security level',
+    icon: 'shield',
     color: '#6A5ACD',
+    gradient: ['#6A5ACD', '#8A2BE2'],
     type: 'question',
     question: 'What is your primary security transport requirement?',
     options: [
-      { value: 'executive', label: 'Executive/VIP Protection', risk: 4 },
-      { value: 'corporate', label: 'Corporate Travel Security', risk: 3 },
-      { value: 'personal', label: 'Personal Safety & Discretion', risk: 2 },
-      { value: 'event', label: 'Event & Public Appearance Transport', risk: 4 }
+      { value: 'executive', label: '👔 Executive/VIP Protection', emoji: '👔', risk: 4 },
+      { value: 'corporate', label: '🏢 Corporate Travel Security', emoji: '🏢', risk: 3 },
+      { value: 'personal', label: '🔒 Personal Safety & Discretion', emoji: '🔒', risk: 2 },
+      { value: 'event', label: '🎭 Event & Public Appearance', emoji: '🎭', risk: 4 }
     ]
   },
   {
     id: 5,
-    title: 'Travel Risk Assessment',
+    title: '⏰ Travel Risk Assessment',
     subtitle: 'Time-based security considerations matter',
-    icon: 'time-outline',
+    description: 'Different times require different security protocols',
+    icon: 'time',
     color: '#FF6347',
+    gradient: ['#FF6347', '#FF7F50'],
     type: 'question',
     question: 'When do you typically require secure transport?',
     options: [
-      { value: 'business_hours', label: 'Business Hours (9 AM - 5 PM)', risk: 1 },
-      { value: 'extended_hours', label: 'Extended Hours (6 AM - 10 PM)', risk: 2 },
-      { value: 'late_night', label: 'Late Night/Early Morning', risk: 4 },
-      { value: 'unpredictable', label: 'Unpredictable/Emergency Basis', risk: 5 }
+      { value: 'business_hours', label: '☀️ Business Hours (9 AM - 5 PM)', emoji: '☀️', risk: 1 },
+      { value: 'extended_hours', label: '🌅 Extended Hours (6 AM - 10 PM)', emoji: '🌅', risk: 2 },
+      { value: 'late_night', label: '🌙 Late Night/Early Morning', emoji: '🌙', risk: 4 },
+      { value: 'unpredictable', label: '🚨 Unpredictable/Emergency Basis', emoji: '🚨', risk: 5 }
     ]
   },
   {
     id: 6,
-    title: 'Threat Assessment Level',
+    title: '🎯 Threat Assessment Level',
     subtitle: 'This determines your security protocol',
-    icon: 'person-outline',
+    description: 'We tailor protection based on your specific risk profile',
+    icon: 'analytics',
     color: '#20B2AA',
+    gradient: ['#20B2AA', '#48D1CC'],
     type: 'question',
     question: 'What best describes your current threat level?',
     options: [
-      { value: 'minimal', label: 'Minimal Risk - General Precaution', risk: 1 },
-      { value: 'moderate', label: 'Moderate Risk - Business Executive', risk: 3 },
-      { value: 'elevated', label: 'Elevated Risk - Public Figure', risk: 4 },
-      { value: 'high', label: 'High Risk - Specific Threats Known', risk: 5 }
+      { value: 'minimal', label: '🟢 Minimal Risk - General Precaution', emoji: '🟢', risk: 1 },
+      { value: 'moderate', label: '🟡 Moderate Risk - Business Executive', emoji: '🟡', risk: 3 },
+      { value: 'elevated', label: '🟠 Elevated Risk - Public Figure', emoji: '🟠', risk: 4 },
+      { value: 'high', label: '🔴 High Risk - Specific Threats Known', emoji: '🔴', risk: 5 }
     ]
   }
 ];
@@ -93,16 +111,51 @@ const OnboardingScreen = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const scrollRef = useRef(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+
+  // Helper function for risk level colors
+  const getRiskColor = (risk) => {
+    switch (risk) {
+      case 1: return '#10B981'; // Green
+      case 2: return '#F59E0B'; // Yellow
+      case 3: return '#F97316'; // Orange
+      case 4: return '#EF4444'; // Red
+      case 5: return '#DC2626'; // Dark Red
+      default: return theme.colors.gray400;
+    }
+  };
+
+  // Animation effect when slide changes
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [currentIndex]);
 
   const handleNext = () => {
     const currentSlide = onboardingData[currentIndex];
-    
+
     // If it's a question slide, require an answer
     if (currentSlide.type === 'question' && !selectedAnswers[currentSlide.id]) {
       return; // Don't proceed without an answer
     }
-    
+
     if (currentIndex < onboardingData.length - 1) {
+      // Reset animations for next slide
+      fadeAnim.setValue(0);
+      scaleAnim.setValue(0.8);
+
       const nextIndex = currentIndex + 1;
       setCurrentIndex(nextIndex);
       scrollRef.current?.scrollTo({
@@ -151,28 +204,50 @@ const OnboardingScreen = ({ navigation }) => {
   const renderInfoSlide = (item) => {
     return (
       <View style={styles.slideContainer}>
-        {/* Background decorative elements */}
+        {/* Enhanced Background with Gradient */}
         <View style={styles.backgroundDecoration}>
-          <View style={[styles.decorativeCircle, styles.decorativeCircle1]} />
-          <View style={[styles.decorativeCircle, styles.decorativeCircle2]} />
+          <View style={[styles.decorativeCircle, styles.decorativeCircle1, { backgroundColor: item.color + '10' }]} />
+          <View style={[styles.decorativeCircle, styles.decorativeCircle2, { backgroundColor: item.color + '15' }]} />
+          <View style={[styles.decorativeCircle, styles.decorativeCircle3, { backgroundColor: item.color + '08' }]} />
         </View>
-        
+
         <View style={styles.contentWrapper}>
-          <View style={styles.iconContainer}>
+          {/* Enhanced Icon Container with Stats */}
+          <Animated.View
+            style={[
+              styles.iconContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }]
+              }
+            ]}
+          >
             <View style={[styles.iconCircle, { backgroundColor: item.color }]}>
               <View style={styles.iconInner}>
-                <Ionicons name={item.icon} size={64} color={theme.colors.surface} />
+                <Ionicons name={item.icon} size={72} color={theme.colors.surface} />
+              </View>
+              {/* Floating stats badge */}
+              <View style={[styles.statsBadge, { backgroundColor: theme.colors.surface, borderColor: item.color }]}>
+                <Text style={[styles.statsText, { color: item.color }]}>{item.stats}</Text>
               </View>
             </View>
-            {/* Floating elements around icon */}
+            {/* Enhanced floating elements */}
             <View style={[styles.floatingDot, styles.floatingDot1, { backgroundColor: item.color + '40' }]} />
             <View style={[styles.floatingDot, styles.floatingDot2, { backgroundColor: item.color + '60' }]} />
             <View style={[styles.floatingDot, styles.floatingDot3, { backgroundColor: item.color + '30' }]} />
-          </View>
-          
+            <View style={[styles.floatingDot, styles.floatingDot4, { backgroundColor: item.color + '20' }]} />
+          </Animated.View>
+
+          {/* Enhanced Text Container */}
           <View style={styles.textContainer}>
+            <View style={[styles.highlightBadge, { backgroundColor: item.color + '15' }]}>
+              <Text style={[styles.highlightText, { color: item.color }]}>{item.highlight}</Text>
+            </View>
             <Text style={styles.title}>{item.title}</Text>
             <Text style={styles.subtitle}>{item.subtitle}</Text>
+            {item.description && (
+              <Text style={styles.description}>{item.description}</Text>
+            )}
           </View>
           
           {/* Centered button area */}
@@ -231,7 +306,7 @@ const OnboardingScreen = ({ navigation }) => {
               <Text style={styles.questionText}>{item.question}</Text>
             </View>
             
-            {/* Compact Options Grid */}
+            {/* Enhanced Options Grid */}
             <View style={styles.optionsGrid}>
               {item.options.map((option, index) => (
                 <TouchableOpacity
@@ -247,15 +322,30 @@ const OnboardingScreen = ({ navigation }) => {
                   activeOpacity={0.8}
                 >
                   <View style={styles.optionChipContent}>
+                    {/* Emoji Icon */}
+                    <View style={styles.optionEmojiContainer}>
+                      <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                    </View>
+
+                    {/* Selection Indicator */}
                     {selectedAnswer?.value === option.value && (
-                      <Ionicons name="checkmark" size={14} color={theme.colors.surface} style={styles.optionCheckmark} />
+                      <View style={styles.selectedIndicator}>
+                        <Ionicons name="checkmark-circle" size={20} color={theme.colors.surface} />
+                      </View>
                     )}
+
+                    {/* Option Text */}
                     <Text style={[
                       styles.optionChipText,
                       selectedAnswer?.value === option.value && styles.optionChipTextSelected
                     ]} numberOfLines={2}>
-                      {option.label}
+                      {option.label.replace(/^[🔴🟠🟡🟢👔🏢🔒🎭☀️🌅🌙🚨]\s*/, '')}
                     </Text>
+
+                    {/* Risk Level Indicator */}
+                    <View style={[styles.riskIndicator, { backgroundColor: getRiskColor(option.risk) }]}>
+                      <Text style={styles.riskText}>Risk: {option.risk}/5</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               ))}
@@ -423,6 +513,12 @@ const styles = {
     bottom: '25%',
     left: '-10%',
   },
+  decorativeCircle3: {
+    width: 80,
+    height: 80,
+    top: '60%',
+    right: '10%',
+  },
   contentWrapper: {
     flex: 1,
     alignItems: 'center',
@@ -476,6 +572,50 @@ const styles = {
     height: 20,
     top: 60,
     left: -10,
+  },
+  floatingDot4: {
+    width: 12,
+    height: 12,
+    bottom: 10,
+    right: -40,
+  },
+  statsBadge: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 2,
+    shadowColor: theme.colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statsText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  highlightBadge: {
+    alignSelf: 'center',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: theme.spacing.md,
+  },
+  highlightText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  description: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.textLight,
+    textAlign: 'center',
+    marginTop: theme.spacing.sm,
+    lineHeight: 20,
   },
   textContainer: {
     alignItems: 'center',
@@ -606,18 +746,19 @@ const styles = {
   },
   optionChip: {
     backgroundColor: theme.colors.surface,
-    borderRadius: 16,
+    borderRadius: 20,
     paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.md,
-    borderWidth: 1.5,
+    paddingVertical: theme.spacing.lg,
+    borderWidth: 2,
     borderColor: theme.colors.gray200,
     minWidth: '47%',
     maxWidth: '47%',
     shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    position: 'relative',
   },
   optionChipSelected: {
     borderWidth: 2,
@@ -627,11 +768,36 @@ const styles = {
   },
   optionChipContent: {
     alignItems: 'center',
-    minHeight: 44,
+    minHeight: 60,
     justifyContent: 'center',
+    position: 'relative',
   },
-  optionCheckmark: {
-    marginBottom: theme.spacing.xs,
+  optionEmojiContainer: {
+    marginBottom: theme.spacing.sm,
+  },
+  optionEmoji: {
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  selectedIndicator: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: theme.colors.success,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: theme.colors.surface,
+  },
+  riskIndicator: {
+    marginTop: theme.spacing.xs,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  riskText: {
+    fontSize: 9,
+    color: theme.colors.surface,
+    fontWeight: '600',
   },
   optionChipText: {
     fontSize: 12,
