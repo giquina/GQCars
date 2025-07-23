@@ -8,6 +8,7 @@ import {
   Dimensions,
   ScrollView,
   Alert,
+  Vibration,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Button from '../components/ui/Button';
@@ -22,29 +23,38 @@ const rideOptions = [
   {
     id: 1,
     name: 'Economy',
-    description: 'Licensed security driver • Up to 4 people',
+    description: 'Licensed security driver',
+    features: ['Professional driver', 'Up to 4 passengers', 'Standard vehicle'],
     price: '$1.99',
     eta: '2 min',
     icon: 'car-outline',
     popular: false,
+    color: '#6B7280',
+    savings: null,
   },
   {
     id: 2,
     name: 'Comfort',
-    description: 'Licensed security driver • Up to 4 people',
+    description: 'Licensed security driver',
+    features: ['Professional driver', 'Up to 4 passengers', 'Premium vehicle', 'Enhanced comfort'],
     price: '$5.99',
     eta: '3 min',
     icon: 'car-sport-outline',
     popular: true,
+    color: '#00C851',
+    savings: 'Most Popular',
   },
   {
     id: 3,
     name: 'Premium',
-    description: 'Licensed security driver • Up to 6 people',
+    description: 'Licensed security driver',
+    features: ['Professional driver', 'Up to 6 passengers', 'Luxury vehicle', 'VIP service'],
     price: '$6.00',
     eta: '5 min',
     icon: 'bus-outline',
     popular: false,
+    color: '#FF6B35',
+    savings: 'Executive',
   },
 ];
 
@@ -140,31 +150,49 @@ const RideSelectionScreen = ({ navigation, route }) => {
                 styles.rideCard,
                 selectedRide.id === ride.id && styles.rideCardSelected
               ]}
-              onPress={() => setSelectedRide(ride)}
+              onPress={() => {
+                Vibration.vibrate(50); // Haptic feedback
+                setSelectedRide(ride);
+              }}
+              activeOpacity={0.8}
             >
-              <View style={styles.rideLeft}>
-                <View style={styles.rideIconContainer}>
-                  <Ionicons name={ride.icon} size={32} color={theme.colors.text} />
-                  {ride.popular && (
-                    <View style={styles.popularBadge}>
-                      <Text style={styles.popularText}>Popular</Text>
-                    </View>
-                  )}
+              {/* Header with Icon and Badge */}
+              <View style={styles.cardHeader}>
+                <View style={[styles.iconContainer, { backgroundColor: ride.color + '15' }]}>
+                  <Ionicons name={ride.icon} size={36} color={ride.color} />
                 </View>
-                <View style={styles.rideInfo}>
-                  <Text style={styles.rideName}>{ride.name}</Text>
-                  <Text style={styles.rideDescription}>{ride.description}</Text>
-                  <Text style={styles.rideEta}>{ride.eta} away</Text>
-                </View>
-              </View>
-              
-              <View style={styles.rideRight}>
-                <Text style={styles.ridePrice}>{ride.price}</Text>
+                {ride.savings && (
+                  <View style={[styles.badge, { backgroundColor: ride.color }]}>
+                    <Text style={styles.badgeText}>{ride.savings}</Text>
+                  </View>
+                )}
                 {selectedRide.id === ride.id && (
-                  <View style={styles.selectedIndicator}>
+                  <View style={styles.selectedCheck}>
                     <Ionicons name="checkmark-circle" size={24} color={theme.colors.primary} />
                   </View>
                 )}
+              </View>
+
+              {/* Service Name */}
+              <Text style={styles.serviceName}>{ride.name}</Text>
+
+              {/* Features List */}
+              <View style={styles.featuresContainer}>
+                {ride.features.slice(0, 2).map((feature, index) => (
+                  <View key={index} style={styles.featureRow}>
+                    <Ionicons name="checkmark" size={14} color={ride.color} />
+                    <Text style={styles.featureText}>{feature}</Text>
+                  </View>
+                ))}
+              </View>
+
+              {/* Price and ETA */}
+              <View style={styles.priceContainer}>
+                <View style={styles.priceRow}>
+                  <Text style={styles.priceLabel}>From</Text>
+                  <Text style={[styles.price, { color: ride.color }]}>{ride.price}</Text>
+                </View>
+                <Text style={styles.eta}>{ride.eta} away</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -184,8 +212,10 @@ const RideSelectionScreen = ({ navigation, route }) => {
 
         {/* Select Ride Button */}
         <Button
-          title={assessmentCompleted ? "Book Safe Transport" : "Complete Assessment to Book"}
+          title={assessmentCompleted ? "🚗 Book Safe Transport" : "🛡️ Complete Assessment to Book"}
           onPress={handleSelectRide}
+          variant={assessmentCompleted ? "primary" : "outline"}
+          size="large"
           style={[
             styles.selectButton,
             !assessmentCompleted && styles.selectButtonDisabled
@@ -287,78 +317,91 @@ const styles = {
     marginBottom: theme.spacing.lg,
   },
   rideCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.sm,
-    borderRadius: 12,
+    padding: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+    borderRadius: 16,
     backgroundColor: theme.colors.surface,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: theme.colors.gray200,
-    minHeight: 80,
-    ...theme.shadows.sm,
+    minHeight: 140,
+    ...theme.shadows.md,
   },
   rideCardSelected: {
     borderColor: theme.colors.primary,
     backgroundColor: theme.colors.primary + '08',
+    borderWidth: 3,
+    ...theme.shadows.lg,
   },
-  rideLeft: {
+  cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.md,
   },
-  rideIconContainer: {
-    position: 'relative',
-    marginRight: theme.spacing.md,
+  iconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  popularBadge: {
+  badge: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  badgeText: {
+    ...theme.typography.labelSmall,
+    color: theme.colors.surface,
+    fontWeight: '700',
+    fontSize: 10,
+  },
+  selectedCheck: {
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: theme.colors.secondary,
-    borderRadius: 8,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
   },
-  popularText: {
-    ...theme.typography.labelSmall,
-    color: theme.colors.surface,
-    fontSize: 8,
-  },
-  rideInfo: {
-    flex: 1,
-    marginRight: theme.spacing.sm,
-    justifyContent: 'center',
-  },
-  rideName: {
-    ...theme.typography.titleMedium,
-    color: theme.colors.text,
-    fontWeight: '600',
-  },
-  rideDescription: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-  },
-  rideEta: {
-    ...theme.typography.labelSmall,
-    color: theme.colors.primary,
-    marginTop: 2,
-  },
-  rideRight: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    minWidth: 80,
-  },
-  ridePrice: {
+  serviceName: {
     ...theme.typography.titleLarge,
     color: theme.colors.text,
     fontWeight: '700',
+    marginBottom: theme.spacing.sm,
   },
-  selectedIndicator: {
-    marginTop: theme.spacing.xs,
+  featuresContainer: {
+    marginBottom: theme.spacing.md,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  featureText: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.textSecondary,
+    marginLeft: 6,
+    flex: 1,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  priceLabel: {
+    ...theme.typography.labelSmall,
+    color: theme.colors.textSecondary,
+    marginRight: 4,
+  },
+  price: {
+    ...theme.typography.headlineSmall,
+    fontWeight: '800',
+  },
+  eta: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.textSecondary,
   },
   tripDetails: {
     backgroundColor: theme.colors.gray50,

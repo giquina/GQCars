@@ -324,7 +324,8 @@ const OnboardingScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>GQCars</Text>
+          <Text style={styles.logo}>🛡️ GQCars</Text>
+          <Text style={styles.logoSubtext}>Security Transport</Text>
         </View>
         <Button
           title="Skip"
@@ -379,6 +380,12 @@ const styles = {
     ...theme.typography.headlineLarge,
     color: theme.colors.primary,
     fontWeight: '700',
+  },
+  logoSubtext: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.textSecondary,
+    marginTop: 2,
+    fontWeight: '500',
   },
   scrollView: {
     flex: 1,

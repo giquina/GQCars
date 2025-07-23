@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
 import GQMapView from '../components/Map/MapView';
 import NavigationMenu from '../components/ui/NavigationMenu';
+import EmergencyButton from '../components/ui/EmergencyButton';
 import LocationService from '../services/LocationService';
 import SecurityAssessmentService from '../services/SecurityAssessmentService';
 import OnboardingDataService from '../services/OnboardingDataService';
@@ -324,16 +325,16 @@ const NewHomeScreen = ({ navigation }) => {
 
   // Dynamic CTA text based on selected service
   const getBookingButtonText = () => {
-    if (!assessmentCompleted) return 'Complete Security Assessment';
-    if (!selectedService) return 'Select Service First';
+    if (!assessmentCompleted) return '🛡️ Complete Security Assessment';
+    if (!selectedService) return 'Choose Your Protection Level';
     const service = services.find(s => s.id === selectedService);
     const hasLocations = pickupCoords && destinationCoords;
-    
+
     if (!hasLocations) {
-      return `Book ${service.name}`;
+      return `🚗 Book ${service.name} Protection`;
     }
     const price = calculatePrice(service, hasLocations);
-    return `Book ${service.name} - ${price}`;
+    return `🚗 Book ${service.name} - ${price}`;
   };
 
   const getBookingButtonSubtext = () => {
@@ -578,8 +579,8 @@ const NewHomeScreen = ({ navigation }) => {
           {/* Header with gradient effect */}
           <View style={styles.cardHeader}>
             <View style={styles.headerGradient} />
-            <Text style={styles.sectionTitle}>Plan Your Secure Trip</Text>
-            <Text style={styles.sectionSubtitle}>Choose your security level and destination</Text>
+            <Text style={styles.sectionTitle}>🛡️ Plan Your Secure Trip</Text>
+            <Text style={styles.sectionSubtitle}>Professional security drivers • Real-time protection</Text>
           </View>
           
           {/* Trip Planning Section */}
@@ -764,6 +765,16 @@ const NewHomeScreen = ({ navigation }) => {
           </ScrollView>
         </View>
       </Animated.View>
+
+      {/* Floating Emergency Button */}
+      <View style={styles.floatingEmergencyButton}>
+        <EmergencyButton
+          size="medium"
+          onEmergencyActivated={() => {
+            navigation.navigate('Emergency');
+          }}
+        />
+      </View>
 
       {/* Navigation Menu */}
       <NavigationMenu
@@ -1317,10 +1328,12 @@ const styles = {
     justifyContent: 'space-between',
     marginTop: theme.spacing.md,
     shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.primaryDark,
     minHeight: 64,
   },
   bookButtonContent: {
@@ -1532,6 +1545,13 @@ const styles = {
     fontSize: 9,
     fontWeight: '700',
     color: theme.colors.surface,
+  },
+  floatingEmergencyButton: {
+    position: 'absolute',
+    bottom: 100,
+    right: theme.spacing.lg,
+    zIndex: 1000,
+    ...theme.shadows.xl,
   },
 };
 

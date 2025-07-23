@@ -346,8 +346,10 @@ const styles = {
     backgroundColor: theme.colors.emergency,
     justifyContent: 'center',
     alignItems: 'center',
-    ...theme.shadows.lg,
-    elevation: 8,
+    ...theme.shadows.xl,
+    elevation: 12,
+    borderWidth: 3,
+    borderColor: theme.colors.surface,
   },
   emergencyButtonActive: {
     backgroundColor: theme.colors.success,
