@@ -578,7 +578,7 @@ const NewHomeScreen = ({ navigation }) => {
           {/* Header with gradient effect */}
           <View style={styles.cardHeader}>
             <View style={styles.headerGradient} />
-            <Text style={styles.sectionTitle}>🛡️ Plan Your Secure Trip ⚡ UPDATED</Text>
+            <Text style={styles.sectionTitle}>🛡️ Plan Your Secure Trip ⚡</Text>
             <Text style={styles.sectionSubtitle}>Professional security drivers • Real-time protection</Text>
           </View>
 
@@ -601,59 +601,7 @@ const NewHomeScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* PROMINENT BOOKING CALL-TO-ACTION - Always Visible */}
-          <View style={styles.prominentBookingSection}>
-            <TouchableOpacity 
-              style={[
-                styles.prominentBookButton, 
-                (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.prominentBookButtonDisabled,
-                (selectedService && pickupCoords && destinationCoords && assessmentCompleted) && styles.prominentBookButtonActive
-              ]}
-              onPress={async () => {
-                if (!assessmentCompleted) {
-                  Alert.alert(
-                    'Security Assessment Required', 
-                    'Please complete your security assessment before booking.',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      { text: 'Start Assessment', onPress: () => navigation.navigate('Assessment') }
-                    ]
-                  );
-                } else if (!selectedService) {
-                  Alert.alert('Select Service', 'Please choose a service type first.');
-                } else if (!pickupCoords || !destinationCoords) {
-                  Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
-                } else {
-                  try {
-                    // Start booking with BookingService
-                    const serviceData = services.find(s => s.id === selectedService);
-                    await bookingService.startBooking({
-                      pickupLocation: { coords: pickupCoords, address: pickupAddress },
-                      destinationLocation: { coords: destinationCoords, address: destinationAddress },
-                      selectedService: serviceData
-                    });
-
-                    // Navigate to ride selection with booking data
-                    navigation.navigate('RideSelection', { 
-                      pickup: { coords: pickupCoords, address: pickupAddress },
-                      destination: { coords: destinationCoords, address: destinationAddress },
-                      selectedService: selectedService,
-                      serviceData: serviceData
-                    });
-                  } catch (error) {
-                    console.error('Error starting booking:', error);
-                    Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
-                  }
-                }
-              }}
-            >
-              <View style={styles.prominentBookButtonContent}>
-                <Text style={styles.prominentBookButtonText}>{getBookingButtonText()}</Text>
-                <Text style={styles.prominentBookButtonSubtext}>{getBookingButtonSubtext()}</Text>
-              </View>
-              <Ionicons name="arrow-forward-circle" size={32} color={theme.colors.surface} />
-            </TouchableOpacity>
-          </View>
+          {/* ...existing code... */}
           
           {/* Trip Planning Section */}
           <View style={styles.tripSection}>
@@ -859,7 +807,63 @@ const NewHomeScreen = ({ navigation }) => {
               ))}
             </View>
           </View>
-          </ScrollView>
+      </ScrollView>
+
+      {/* Floating Booking CTA Bubble - Always Visible */}
+      <View style={styles.floatingBookButtonContainer} pointerEvents="box-none">
+        <TouchableOpacity
+          style={[
+            styles.prominentBookButton,
+            styles.floatingBookButton,
+            (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.prominentBookButtonDisabled,
+            (selectedService && pickupCoords && destinationCoords && assessmentCompleted) && styles.prominentBookButtonActive
+          ]}
+          activeOpacity={0.92}
+          onPress={async () => {
+            if (!assessmentCompleted) {
+              Alert.alert(
+                'Security Assessment Required',
+                'Please complete your security assessment before booking.',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Start Assessment', onPress: () => navigation.navigate('Assessment') }
+                ]
+              );
+            } else if (!selectedService) {
+              Alert.alert('Select Service', 'Please choose a service type first.');
+            } else if (!pickupCoords || !destinationCoords) {
+              Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
+            } else {
+              try {
+                // Start booking with BookingService
+                const serviceData = services.find(s => s.id === selectedService);
+                await bookingService.startBooking({
+                  pickupLocation: { coords: pickupCoords, address: pickupAddress },
+                  destinationLocation: { coords: destinationCoords, address: destinationAddress },
+                  selectedService: serviceData
+                });
+
+                // Navigate to ride selection with booking data
+                navigation.navigate('RideSelection', {
+                  pickup: { coords: pickupCoords, address: pickupAddress },
+                  destination: { coords: destinationCoords, address: destinationAddress },
+                  selectedService: selectedService,
+                  serviceData: serviceData
+                });
+              } catch (error) {
+                console.error('Error starting booking:', error);
+                Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
+              }
+            }
+          }}
+        >
+          <View style={styles.prominentBookButtonContent}>
+            <Text style={styles.prominentBookButtonText}>{getBookingButtonText()}</Text>
+            <Text style={styles.prominentBookButtonSubtext}>{getBookingButtonSubtext()}</Text>
+          </View>
+          <Ionicons name="arrow-forward-circle" size={32} color={theme.colors.surface} />
+        </TouchableOpacity>
+      </View>
         </View>
       </Animated.View>
 
@@ -876,6 +880,26 @@ const NewHomeScreen = ({ navigation }) => {
 };
 
 const styles = {
+  floatingBookButtonContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 24,
+    alignItems: 'center',
+    zIndex: 100,
+    pointerEvents: 'box-none',
+  },
+  floatingBookButton: {
+    elevation: 12,
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    minWidth: 220,
+    maxWidth: 400,
+    alignSelf: 'center',
+    marginHorizontal: 16,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -983,16 +1007,13 @@ const styles = {
   },
   bottomCard: {
     backgroundColor: theme.colors.surface,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     paddingTop: theme.spacing.sm,
     paddingHorizontal: 0,
     paddingBottom: theme.spacing.xxxl,
-    shadowColor: theme.colors.shadow,
+    ...theme.shadows.xl,
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 15,
     flex: 1,
   },
   dragHandleContainer: {
@@ -1069,24 +1090,19 @@ const styles = {
   },
   serviceRow: {
     backgroundColor: theme.colors.surface,
-    borderRadius: 16,
+    borderRadius: 12,
     borderLeftWidth: 4,
     borderWidth: 1,
     borderColor: theme.colors.gray200,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
+    ...theme.shadows.sm,
+    marginBottom: theme.spacing.xs,
   },
   serviceRowSelected: {
     borderColor: theme.colors.primary,
     backgroundColor: theme.colors.primary + '08',
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+    ...theme.shadows.md,
     borderLeftWidth: 6,
-    transform: [{ scale: 1.02 }],
+    transform: [{ scale: 1.01 }],
   },
   serviceRowRecommended: {
     borderColor: '#FF6B35',
@@ -1128,8 +1144,8 @@ const styles = {
     marginBottom: 6,
   },
   serviceRowName: {
-    fontSize: 14,
-    fontWeight: '700',
+    ...theme.typography.titleMedium,
+    fontWeight: '600',
     color: theme.colors.text,
     marginBottom: 4,
   },
@@ -1190,9 +1206,8 @@ const styles = {
     color: '#4CAF50',
   },
   serviceRowDescription: {
-    fontSize: 12,
+    ...theme.typography.bodySmall,
     color: theme.colors.textSecondary,
-    lineHeight: 16,
     marginTop: 2,
   },
   serviceRowRight: {
@@ -1229,16 +1244,12 @@ const styles = {
   },
   locationInputCard: {
     backgroundColor: theme.colors.surface,
-    borderRadius: 16,
+    borderRadius: 12,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.sm,
-    shadowColor: theme.colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...theme.shadows.md,
     borderWidth: 1,
-    borderColor: theme.colors.gray100,
+    borderColor: theme.colors.gray200,
   },
   locationInputRow: {
     flexDirection: 'row',
@@ -1357,14 +1368,14 @@ const styles = {
     color: theme.colors.textSecondary,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    ...theme.typography.headlineLarge,
     color: theme.colors.text,
     marginBottom: theme.spacing.xs,
     textAlign: 'center',
+    fontWeight: '700',
   },
   sectionSubtitle: {
-    fontSize: 14,
+    ...theme.typography.bodyMedium,
     color: theme.colors.textSecondary,
     textAlign: 'center',
     marginBottom: theme.spacing.md,
@@ -1408,35 +1419,30 @@ const styles = {
   },
   bookButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: 16,
+    borderRadius: 12,
     paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: theme.spacing.md,
+    ...theme.shadows.lg,
     shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 12,
-    borderWidth: 1,
-    borderColor: theme.colors.primaryDark,
     minHeight: 64,
   },
   bookButtonContent: {
     flex: 1,
   },
   bookButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
+    ...theme.typography.titleLarge,
+    fontWeight: '600',
     color: theme.colors.surface,
     marginBottom: 2,
   },
   bookButtonSubtext: {
-    fontSize: 12,
+    ...theme.typography.bodySmall,
     color: theme.colors.surface,
-    opacity: 0.8,
+    opacity: 0.9,
   },
   bookButtonDisabled: {
     backgroundColor: theme.colors.gray400,
@@ -1444,12 +1450,9 @@ const styles = {
   },
   bookButtonActive: {
     backgroundColor: theme.colors.success,
+    ...theme.shadows.xl,
     shadowColor: theme.colors.success,
-    shadowOpacity: 0.6,
     transform: [{ scale: 1.02 }],
-    elevation: 16,
-    borderWidth: 2,
-    borderColor: theme.colors.surface,
   },
   safetyIconContainer: {
     width: 32,
@@ -1695,23 +1698,17 @@ const styles = {
   prominentBookingSection: {
     marginHorizontal: theme.spacing.lg,
     marginVertical: theme.spacing.lg,
-    elevation: 8,
-    shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    ...theme.shadows.lg,
   },
   prominentBookButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: 20,
+    borderRadius: 16,
     paddingVertical: theme.spacing.xl,
     paddingHorizontal: theme.spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderWidth: 3,
-    borderColor: theme.colors.primaryDark,
-    minHeight: 80,
+    minHeight: 72,
   },
   prominentBookButtonDisabled: {
     backgroundColor: theme.colors.gray400,
@@ -1720,22 +1717,21 @@ const styles = {
   },
   prominentBookButtonActive: {
     backgroundColor: theme.colors.success,
-    borderColor: theme.colors.surface,
+    ...theme.shadows.lg,
     shadowColor: theme.colors.success,
-    shadowOpacity: 0.5,
     transform: [{ scale: 1.02 }],
   },
   prominentBookButtonContent: {
     flex: 1,
   },
   prominentBookButtonText: {
-    fontSize: 20,
-    fontWeight: '800',
+    ...theme.typography.headlineSmall,
+    fontWeight: '700',
     color: theme.colors.surface,
     marginBottom: 4,
   },
   prominentBookButtonSubtext: {
-    fontSize: 14,
+    ...theme.typography.bodyMedium,
     color: theme.colors.surface,
     opacity: 0.9,
     fontWeight: '500',

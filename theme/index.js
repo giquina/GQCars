@@ -1,8 +1,8 @@
 const colors = {
-  // Primary green theme (matching Figma design)
-  primary: '#00C851', // Green accent color
-  primaryDark: '#00A445',
-  primaryLight: '#33D470',
+  // Professional blue primary theme (like Uber/Lyft)
+  primary: '#007AFF', // Professional blue
+  primaryDark: '#005BB5',
+  primaryLight: '#4DA2FF',
   
   // Secondary colors
   secondary: '#FF6B35', // Orange accent

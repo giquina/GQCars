@@ -142,7 +142,7 @@ const AssessmentScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={goBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#D4AF37" />
+          <Ionicons name="arrow-back" size={24} color="#007AFF" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Security Assessment</Text>
         <View style={styles.placeholder} />
@@ -153,32 +153,27 @@ const AssessmentScreen = ({ navigation, route }) => {
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
         <Text style={styles.progressText}>
-          Question {currentQuestion + 1} of {availableQuestions.length}
+          Question {currentQuestion + 1} of {questions.length}
         </Text>
-        {Object.keys(onboardingData).length > 0 && (
-          <Text style={styles.onboardingNote}>
-            {Object.keys(onboardingData).length} questions answered during onboarding
-          </Text>
-        )}
       </View>
 
       <ScrollView style={styles.content}>
         <View style={styles.questionContainer}>
-          <Ionicons name="shield-checkmark" size={40} color="#D4AF37" style={styles.questionIcon} />
+          <Ionicons name="shield-checkmark" size={40} color="#007AFF" style={styles.questionIcon} />
           <Text style={styles.questionText}>
-            {availableQuestions[currentQuestion]?.question}
+            {questions[currentQuestion]?.question}
           </Text>
         </View>
 
         <View style={styles.optionsContainer}>
-          {availableQuestions[currentQuestion]?.options.map((option, index) => (
+          {questions[currentQuestion]?.options.map((option, index) => (
             <TouchableOpacity
               key={index}
               style={styles.optionButton}
               onPress={() => handleAnswer(option.value, option.risk)}
             >
               <Text style={styles.optionText}>{option.label}</Text>
-              <Ionicons name="chevron-forward" size={20} color="#D4AF37" />
+              <Ionicons name="chevron-forward" size={20} color="#007AFF" />
             </TouchableOpacity>
           ))}
         </View>
@@ -190,7 +185,7 @@ const AssessmentScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -198,7 +193,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#333333',
+    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
   },
   backButton: {
     padding: 5,
@@ -206,33 +202,35 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#1A1A1A',
   },
   placeholder: {
     width: 34,
   },
   progressContainer: {
     padding: 20,
+    backgroundColor: '#FFFFFF',
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#333333',
+    backgroundColor: '#E0E0E0',
     borderRadius: 2,
     marginBottom: 10,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#D4AF37',
+    backgroundColor: '#007AFF',
     borderRadius: 2,
   },
   progressText: {
     fontSize: 14,
-    color: '#cccccc',
+    color: '#666666',
     textAlign: 'center',
   },
   content: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#F5F5F5',
   },
   questionContainer: {
     alignItems: 'center',
@@ -244,7 +242,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#1A1A1A',
     textAlign: 'center',
     lineHeight: 28,
   },
@@ -253,25 +251,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   optionButton: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#FFFFFF',
     padding: 18,
-    borderRadius: 16,
+    borderRadius: 12,
     marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    borderWidth: 1.5,
-    borderColor: '#333333',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
     minHeight: 64,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
   optionText: {
     fontSize: 15,
-    color: '#ffffff',
+    color: '#1A1A1A',
     flex: 1,
     marginRight: 16,
     lineHeight: 20,

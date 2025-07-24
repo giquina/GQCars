@@ -125,10 +125,23 @@ cat health-check-results.json   # View health check results
 3. `npm start` - Start development server
 4. If issues with Expo Go, use `npx expo start --tunnel`
 
+### Web App Development
+1. `cd web-app` - Navigate to web directory
+2. `npm install` - Install web dependencies (first time)
+3. `npm run dev` - Start Next.js development server
+4. Open http://localhost:3000 in browser
+
+### Project Structure
+- **Mobile App**: Main directory (`/workspaces/GQCars/`)
+- **Web App**: `web-app/` subdirectory
+- **Shared Services**: Both apps use similar service patterns
+- **Startup Guide**: See `STARTUP_GUIDE.md` for complete instructions
+
 ### Before Deployment
 1. `npm test` - Run full test suite
 2. `npm run health-check` - Ensure all checks pass
 3. `npm run monitor` - Start monitoring to verify stability
+4. For web: `cd web-app && npm run build` - Build web app
 
 ### Common Development Tasks
 - **Adding new screens**: Follow existing navigation patterns in App.js
