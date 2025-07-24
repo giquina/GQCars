@@ -4,7 +4,7 @@ import notificationService, { NOTIFICATION_TYPES } from './NotificationService';
 // Mock Stripe configuration - In production, use your actual Stripe publishable key
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_your_stripe_publishable_key_here';
 
-export class PaymentService {
+class PaymentService {
   constructor() {
     this.stripe = null;
   }
@@ -19,7 +19,7 @@ export class PaymentService {
   }
 
   // Validate card number using Luhn algorithm
-  static validateCardNumber(cardNumber) {
+  validateCardNumber(cardNumber) {
     // Remove spaces and non-numeric characters
     const cleaned = cardNumber.replace(/\D/g, '');
     
@@ -49,7 +49,7 @@ export class PaymentService {
   }
 
   // Validate expiry date
-  static validateExpiryDate(expiry) {
+  validateExpiryDate(expiry) {
     const cleaned = expiry.replace(/\D/g, '');
     if (cleaned.length !== 4) return false;
     
@@ -70,14 +70,14 @@ export class PaymentService {
   }
 
   // Validate CVC
-  static validateCVC(cvc, cardType = 'visa') {
+  validateCVC(cvc, cardType = 'visa') {
     const cleaned = cvc.replace(/\D/g, '');
     const expectedLength = cardType === 'amex' ? 4 : 3;
     return cleaned.length === expectedLength;
   }
 
   // Get card type from card number
-  static getCardType(cardNumber) {
+  getCardType(cardNumber) {
     const cleaned = cardNumber.replace(/\D/g, '');
     
     if (cleaned.match(/^4/)) return 'visa';
@@ -89,9 +89,9 @@ export class PaymentService {
   }
 
   // Format card number with spaces
-  static formatCardNumber(cardNumber) {
+  formatCardNumber(cardNumber) {
     const cleaned = cardNumber.replace(/\D/g, '');
-    const cardType = PaymentService.getCardType(cleaned);
+    const cardType = this.getCardType(cleaned);
     
     if (cardType === 'amex') {
       // American Express: 4-6-5 format
@@ -103,7 +103,7 @@ export class PaymentService {
   }
 
   // Format expiry date
-  static formatExpiryDate(expiry) {
+  formatExpiryDate(expiry) {
     const cleaned = expiry.replace(/\D/g, '');
     if (cleaned.length >= 2) {
       return cleaned.substring(0, 2) + (cleaned.length > 2 ? '/' + cleaned.substring(2, 4) : '');
@@ -112,7 +112,7 @@ export class PaymentService {
   }
 
   // Mock payment methods storage (in production, use secure storage)
-  static getStoredPaymentMethods() {
+  getStoredPaymentMethods() {
     return [
       {
         id: 'pm_1',
@@ -158,21 +158,21 @@ export class PaymentService {
   }
 
   // Set default payment method
-  static setDefaultPaymentMethod(paymentMethodId) {
+  setDefaultPaymentMethod(paymentMethodId) {
     // In production, call your backend API
     console.log('Setting default payment method:', paymentMethodId);
     return Promise.resolve({ success: true });
   }
 
   // Remove payment method
-  static removePaymentMethod(paymentMethodId) {
+  removePaymentMethod(paymentMethodId) {
     // In production, call your backend API
     console.log('Removing payment method:', paymentMethodId);
     return Promise.resolve({ success: true });
   }
 
   // Create payment intent
-  static async createPaymentIntent(amount, currency = 'gbp', paymentMethodId = null) {
+  async createPaymentIntent(amount, currency = 'gbp', paymentMethodId = null) {
     // In production, call your backend API to create payment intent
     const mockPaymentIntent = {
       id: 'pi_' + Math.random().toString(36).substr(2, 9),
@@ -187,7 +187,7 @@ export class PaymentService {
   }
 
   // Confirm payment
-  static async confirmPayment(paymentIntentClientSecret, paymentMethodData) {
+  async confirmPayment(paymentIntentClientSecret, paymentMethodData) {
     // Mock payment confirmation
     // In production, use Stripe's confirmPayment method
     await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate processing time
@@ -204,17 +204,17 @@ export class PaymentService {
   }
 
   // Process payment for trip
-  static async processPayment(tripDetails, paymentMethodId, amount) {
+  async processPayment(tripDetails, paymentMethodId, amount) {
     try {
       // Create payment intent
-      const paymentIntent = await PaymentService.createPaymentIntent(
+      const paymentIntent = await this.createPaymentIntent(
         amount,
         'gbp',
         paymentMethodId
       );
 
       // In a real implementation, you would use Stripe's confirmPayment
-      const result = await PaymentService.confirmPayment(
+      const result = await this.confirmPayment(
         paymentIntent.client_secret,
         { payment_method: paymentMethodId }
       );
@@ -246,7 +246,7 @@ export class PaymentService {
   }
 
   // Calculate trip cost
-  static calculateTripCost(service, duration, distance) {
+  calculateTripCost(service, duration, distance) {
     const baseRate = service?.baseRate || 50; // Base rate in GBP
     const timeRate = service?.timeRate || 2; // Per minute
     const distanceRate = service?.distanceRate || 1.5; // Per mile
@@ -274,7 +274,7 @@ export class PaymentService {
   }
 
   // Get card brand icon name
-  static getCardIcon(brand) {
+  getCardIcon(brand) {
     const icons = {
       visa: 'card',
       mastercard: 'card',
@@ -286,7 +286,7 @@ export class PaymentService {
   }
 
   // Get formatted card display
-  static getCardDisplay(paymentMethod) {
+  getCardDisplay(paymentMethod) {
     if (!paymentMethod || !paymentMethod.card) return 'Unknown Card';
     
     const { brand, last4 } = paymentMethod.card;
@@ -296,4 +296,6 @@ export class PaymentService {
   }
 }
 
-export default PaymentService;
+// Export singleton instance to match BookingService pattern
+const paymentServiceInstance = new PaymentService();
+export default paymentServiceInstance;

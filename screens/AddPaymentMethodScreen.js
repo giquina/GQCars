@@ -15,7 +15,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import theme from '../theme';
-import PaymentService from '../services/PaymentService';
+import paymentService from '../services/PaymentService';
 
 const AddPaymentMethodScreen = ({ navigation, route }) => {
   const [cardNumber, setCardNumber] = useState('');
@@ -50,22 +50,22 @@ const AddPaymentMethodScreen = ({ navigation, route }) => {
     // Card number validation
     if (!cardNumber.trim()) {
       newErrors.cardNumber = 'Card number is required';
-    } else if (!PaymentService.validateCardNumber(cardNumber)) {
+    } else if (!paymentService.validateCardNumber(cardNumber)) {
       newErrors.cardNumber = 'Invalid card number';
     }
 
     // Expiry date validation
     if (!expiryDate.trim()) {
       newErrors.expiryDate = 'Expiry date is required';
-    } else if (!PaymentService.validateExpiryDate(expiryDate)) {
+    } else if (!paymentService.validateExpiryDate(expiryDate)) {
       newErrors.expiryDate = 'Invalid expiry date';
     }
 
     // CVC validation
-    const cardType = PaymentService.getCardType(cardNumber);
+    const cardType = paymentService.getCardType(cardNumber);
     if (!cvc.trim()) {
       newErrors.cvc = 'CVC is required';
-    } else if (!PaymentService.validateCVC(cvc, cardType)) {
+    } else if (!paymentService.validateCVC(cvc, cardType)) {
       newErrors.cvc = cardType === 'amex' ? 'CVC must be 4 digits' : 'CVC must be 3 digits';
     }
 
@@ -93,7 +93,7 @@ const AddPaymentMethodScreen = ({ navigation, route }) => {
 
   const handleCardNumberChange = (text) => {
     // Remove non-numeric characters and format
-    const formatted = PaymentService.formatCardNumber(text);
+    const formatted = paymentService.formatCardNumber(text);
     setCardNumber(formatted);
     
     // Clear error when user starts typing
@@ -109,7 +109,7 @@ const AddPaymentMethodScreen = ({ navigation, route }) => {
   };
 
   const handleExpiryChange = (text) => {
-    const formatted = PaymentService.formatExpiryDate(text);
+    const formatted = paymentService.formatExpiryDate(text);
     setExpiryDate(formatted);
     
     if (errors.expiryDate) {
@@ -125,7 +125,7 @@ const AddPaymentMethodScreen = ({ navigation, route }) => {
   const handleCvcChange = (text) => {
     // Only allow numeric input
     const cleaned = text.replace(/\D/g, '');
-    const cardType = PaymentService.getCardType(cardNumber);
+    const cardType = paymentService.getCardType(cardNumber);
     const maxLength = cardType === 'amex' ? 4 : 3;
     
     setCvc(cleaned.substring(0, maxLength));
@@ -191,8 +191,8 @@ const AddPaymentMethodScreen = ({ navigation, route }) => {
   };
 
   const getCardTypeIcon = () => {
-    const cardType = PaymentService.getCardType(cardNumber);
-    return PaymentService.getCardIcon(cardType);
+    const cardType = paymentService.getCardType(cardNumber);
+    return paymentService.getCardIcon(cardType);
   };
 
   return (

@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import theme from '../theme';
-import PaymentService from '../services/PaymentService';
+import paymentService from '../services/PaymentService';
 
 const PaymentConfirmationScreen = ({ navigation, route }) => {
   const { tripDetails, paymentMethod } = route.params;
@@ -37,7 +37,7 @@ const PaymentConfirmationScreen = ({ navigation, route }) => {
     const duration = tripDetails?.estimatedDuration || 60; // minutes
     const distance = tripDetails?.estimatedDistance || 15; // miles
     
-    const breakdown = PaymentService.calculateTripCost(mockService, duration, distance);
+    const breakdown = paymentService.calculateTripCost(mockService, duration, distance);
     setCostBreakdown(breakdown);
   };
 
@@ -50,7 +50,7 @@ const PaymentConfirmationScreen = ({ navigation, route }) => {
     setProcessing(true);
     
     try {
-      const result = await PaymentService.processPayment(
+      const result = await paymentService.processPayment(
         tripDetails,
         paymentMethod.id,
         costBreakdown.total
@@ -245,13 +245,13 @@ const PaymentConfirmationScreen = ({ navigation, route }) => {
           
           <View style={styles.paymentMethodContent}>
             <Ionicons
-              name={PaymentService.getCardIcon(paymentMethod.card.brand)}
+              name={paymentService.getCardIcon(paymentMethod.card.brand)}
               size={24}
               color={theme.colors.primary}
             />
             <View style={styles.paymentMethodDetails}>
               <Text style={styles.paymentMethodTitle}>
-                {PaymentService.getCardDisplay(paymentMethod)}
+                {paymentService.getCardDisplay(paymentMethod)}
               </Text>
               <Text style={styles.paymentMethodSubtitle}>
                 {paymentMethod.billing_details.name}

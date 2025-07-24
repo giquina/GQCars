@@ -13,12 +13,14 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmergencyButton from '../components/ui/EmergencyButton';
-import BookingService from '../services/BookingService';
-import PaymentService from '../services/PaymentService';
+import bookingService from '../services/BookingService';
+import paymentService from '../services/PaymentService';
+import { useBooking } from '../context/BookingContext';
 import theme from '../theme';
 
 const BookingConfirmationScreen = ({ navigation, route }) => {
   const { bookingDetails } = route.params || {};
+  const { currentBooking, processPayment, cancelBooking, clearCurrentBooking, getCurrentBookingStatus, priceEstimate } = useBooking();
   
   const [isLoading, setIsLoading] = useState(false);
   const [pricingData, setPricingData] = useState(null);
@@ -62,7 +64,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
   const loadPaymentMethods = async () => {
     try {
-      const methods = await PaymentService.getPaymentMethods();
+      const methods = await paymentService.getPaymentMethods();
       setPaymentMethods(methods);
       if (methods.length > 0) {
         setSelectedPaymentMethod(methods[0]);
@@ -79,7 +81,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
     const duration = bookingDetails.estimatedDuration || 15; // Default 15min
     const isScheduled = bookingDetails.schedulingType === 'scheduled';
     
-    const pricing = BookingService.calculatePrice(selectedRideType, distance, duration, isScheduled);
+    const pricing = bookingService.calculatePrice(selectedRideType, distance, duration);
     
     // Add service charges
     const serviceTotal = bookingDetails.serviceTotal || 0;
@@ -112,10 +114,10 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
         status: 'confirmed',
       };
 
-      await BookingService.updateBooking(finalBookingData);
+      await bookingService.createBooking(finalBookingData);
 
       // Process payment
-      const paymentResult = await PaymentService.processPayment({
+      const paymentResult = await paymentService.processPayment({
         amount: pricingData.totalPrice,
         paymentMethodId: selectedPaymentMethod.id,
         description: `GQCars ride from ${bookingDetails.pickup.address}`,
@@ -124,7 +126,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
       if (paymentResult.success) {
         // Navigate to booking status screen
         navigation.navigate('BookingStatus', { 
-          bookingId: BookingService.getCurrentBooking()?.id 
+          bookingId: bookingService.getCurrentBooking()?.id 
         });
       } else {
         throw new Error('Payment failed');
@@ -251,8 +253,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.ridePricing}>
                   <Text style={[styles.ridePrice, { color: ride.color }]}>
-                    £{BookingService.calculatePrice(ride.id, pricingData.distance, pricingData.duration, 
-                      bookingDetails.schedulingType === 'scheduled').finalPrice.toFixed(2)}
+                    £{bookingService.calculatePrice(ride.id, pricingData.distance, pricingData.duration).total.toFixed(2)}
                   </Text>
                   <Text style={styles.rideEta}>3-5 min</Text>
                 </View>

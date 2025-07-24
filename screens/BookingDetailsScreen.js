@@ -7,19 +7,20 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+// Using simple date/time selection instead of external DateTimePicker
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
 import EmergencyButton from '../components/ui/EmergencyButton';
-import BookingService from '../services/BookingService';
+import bookingService from '../services/BookingService';
 import theme from '../theme';
+import { useBooking } from '../context/BookingContext';
 
 const BookingDetailsScreen = ({ navigation, route }) => {
   const { bookingData } = route.params || {};
+  const { selectedService, setSelectedService, calculatePriceEstimate, priceEstimate, pickupLocation, destinationLocation, isBookingFormComplete } = useBooking();
   
   // Booking details state
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -33,8 +34,7 @@ const BookingDetailsScreen = ({ navigation, route }) => {
   const [isVipService, setIsVipService] = useState(false);
   
   // UI state
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  // Removed DateTimePicker dependencies - using simple button-based selection
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -72,20 +72,60 @@ const BookingDetailsScreen = ({ navigation, route }) => {
 
   const [selectedServices, setSelectedServices] = useState([]);
 
-  const handleDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setSelectedDate(selectedDate);
-      setErrors(prev => ({ ...prev, date: null }));
-    }
+  const handleDateSelect = () => {
+    // Simple date selection - show available dates
+    const today = new Date();
+    const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+    const dayAfter = new Date(today.getTime() + 2 * 24 * 60 * 60 * 1000);
+    
+    Alert.alert(
+      'Select Date',
+      'Choose your preferred date:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: `Today (${today.toLocaleDateString()})`, 
+          onPress: () => {
+            setSelectedDate(today);
+            setErrors(prev => ({ ...prev, date: null }));
+          }
+        },
+        { 
+          text: `Tomorrow (${tomorrow.toLocaleDateString()})`, 
+          onPress: () => {
+            setSelectedDate(tomorrow);
+            setErrors(prev => ({ ...prev, date: null }));
+          }
+        },
+        { 
+          text: `${dayAfter.toLocaleDateString()}`, 
+          onPress: () => {
+            setSelectedDate(dayAfter);
+            setErrors(prev => ({ ...prev, date: null }));
+          }
+        },
+      ]
+    );
   };
 
-  const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      setSelectedTime(selectedTime);
-      setErrors(prev => ({ ...prev, time: null }));
-    }
+  const handleTimeSelect = () => {
+    // Simple time selection - show common time slots
+    Alert.alert(
+      'Select Time',
+      'Choose your preferred time:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: '9:00 AM', onPress: () => setSelectedTime(new Date().setHours(9, 0)) },
+        { text: '12:00 PM', onPress: () => setSelectedTime(new Date().setHours(12, 0)) },
+        { text: '3:00 PM', onPress: () => setSelectedTime(new Date().setHours(15, 0)) },
+        { text: '6:00 PM', onPress: () => setSelectedTime(new Date().setHours(18, 0)) },
+        { text: 'Custom', onPress: () => {
+          // For custom time, use current time
+          setSelectedTime(new Date());
+          setErrors(prev => ({ ...prev, time: null }));
+        }},
+      ]
+    );
   };
 
   const toggleService = (serviceId) => {
@@ -174,7 +214,7 @@ const BookingDetailsScreen = ({ navigation, route }) => {
       };
 
       // Update booking with details
-      await BookingService.updateBooking(bookingDetails);
+      await bookingService.createBooking(bookingDetails);
 
       // Navigate to confirmation screen
       navigation.navigate('BookingConfirmation', { bookingDetails });
@@ -292,7 +332,7 @@ const BookingDetailsScreen = ({ navigation, route }) => {
               <View style={styles.dateTimeRow}>
                 <TouchableOpacity
                   style={styles.dateTimeButton}
-                  onPress={() => setShowDatePicker(true)}
+                  onPress={handleDateSelect}
                 >
                   <Ionicons name="calendar-outline" size={20} color={theme.colors.primary} />
                   <Text style={styles.dateTimeButtonText}>{formatDate(selectedDate)}</Text>
@@ -300,7 +340,7 @@ const BookingDetailsScreen = ({ navigation, route }) => {
 
                 <TouchableOpacity
                   style={styles.dateTimeButton}
-                  onPress={() => setShowTimePicker(true)}
+                  onPress={handleTimeSelect}
                 >
                   <Ionicons name="time-outline" size={20} color={theme.colors.primary} />
                   <Text style={styles.dateTimeButtonText}>{formatTime(selectedTime)}</Text>
@@ -422,26 +462,7 @@ const BookingDetailsScreen = ({ navigation, route }) => {
         />
       </View>
 
-      {/* Date/Time Pickers */}
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleDateChange}
-          minimumDate={new Date()}
-          maximumDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
-        />
-      )}
-
-      {showTimePicker && (
-        <DateTimePicker
-          value={selectedTime}
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={handleTimeChange}
-        />
-      )}
+      {/* Date/Time selection now handled via Alert dialogs - no external DateTimePicker needed */}
     </SafeAreaView>
   );
 };

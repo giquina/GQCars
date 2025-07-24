@@ -15,7 +15,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import EmergencyButton from '../components/ui/EmergencyButton';
 import SecurityAssessmentService from '../services/SecurityAssessmentService';
-import BookingService from '../services/BookingService';
+import bookingService from '../services/BookingService';
 import theme from '../theme';
 
 const { width, height } = Dimensions.get('window');
@@ -63,7 +63,7 @@ const RideSelectionScreen = ({ navigation, route }) => {
   const [selectedRide, setSelectedRide] = useState(rideOptions[1]); // Default to Normal
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const { destination, pickup, selectedService, serviceData } = route.params || {};
-  const bookingService = BookingService.getInstance();
+  // Removed bookingService.getInstance() - using context instead
 
   const handleSelectRide = async () => {
     if (!assessmentCompleted) {
@@ -147,6 +147,33 @@ const RideSelectionScreen = ({ navigation, route }) => {
 
       {/* Bottom Card */}
       <View style={styles.bottomCard}>
+        {/* Progress Indicator */}
+        <View style={styles.progressContainer}>
+          <View style={styles.progressSteps}>
+            <View style={[styles.progressStep, styles.progressStepCompleted]}>
+              <Text style={styles.progressStepNumber}>1</Text>
+            </View>
+            <View style={[styles.progressLine, styles.progressLineActive]} />
+            <View style={[styles.progressStep, styles.progressStepActive]}>
+              <Text style={styles.progressStepNumberActive}>2</Text>
+            </View>
+            <View style={styles.progressLine} />
+            <View style={styles.progressStep}>
+              <Text style={styles.progressStepNumber}>3</Text>
+            </View>
+            <View style={styles.progressLine} />
+            <View style={styles.progressStep}>
+              <Text style={styles.progressStepNumber}>4</Text>
+            </View>
+          </View>
+          <View style={styles.progressLabels}>
+            <Text style={[styles.progressLabel, styles.progressLabelCompleted]}>Service</Text>
+            <Text style={[styles.progressLabel, styles.progressLabelActive]}>Vehicle</Text>
+            <Text style={styles.progressLabel}>Driver</Text>
+            <Text style={styles.progressLabel}>Payment</Text>
+          </View>
+        </View>
+
         <Text style={styles.chooseRideTitle}>Choose your ride</Text>
         <Text style={styles.chooseRideSubtitle}>All drivers are licensed security professionals</Text>
         
@@ -154,8 +181,7 @@ const RideSelectionScreen = ({ navigation, route }) => {
         <ScrollView 
           showsVerticalScrollIndicator={false} 
           style={styles.ridesContainer}
-          removeClippedSubviews={true}
-          maxToRenderPerBatch={5}
+          contentContainerStyle={styles.ridesContentContainer}
         >
           {rideOptions.map((ride) => (
             <TouchableOpacity
@@ -226,7 +252,7 @@ const RideSelectionScreen = ({ navigation, route }) => {
 
         {/* Select Ride Button */}
         <Button
-          title={assessmentCompleted ? "🚗 Book Safe Transport" : "🛡️ Complete Assessment to Book"}
+          title={assessmentCompleted ? "🚗 Continue to Driver Selection" : "🛡️ Complete Assessment to Book"}
           onPress={handleSelectRide}
           variant={assessmentCompleted ? "primary" : "outline"}
           size="large"
@@ -329,6 +355,10 @@ const styles = {
   ridesContainer: {
     flex: 1,
     marginBottom: theme.spacing.lg,
+  },
+  ridesContentContainer: {
+    paddingBottom: theme.spacing.xl,
+    flexGrow: 1,
   },
   rideCard: {
     padding: theme.spacing.lg,
@@ -439,6 +469,68 @@ const styles = {
   selectButtonDisabled: {
     backgroundColor: theme.colors.gray400,
     opacity: 0.6,
+  },
+  // Progress indicator styles
+  progressContainer: {
+    marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+  },
+  progressSteps: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  progressStep: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: theme.colors.gray200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressStepCompleted: {
+    backgroundColor: theme.colors.success,
+  },
+  progressStepActive: {
+    backgroundColor: theme.colors.primary,
+  },
+  progressStepNumber: {
+    ...theme.typography.labelSmall,
+    color: theme.colors.gray600,
+    fontWeight: '600',
+  },
+  progressStepNumberActive: {
+    ...theme.typography.labelSmall,
+    color: theme.colors.surface,
+    fontWeight: '600',
+  },
+  progressLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: theme.colors.gray200,
+    marginHorizontal: theme.spacing.xs,
+  },
+  progressLineActive: {
+    backgroundColor: theme.colors.success,
+  },
+  progressLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.xs,
+  },
+  progressLabel: {
+    ...theme.typography.labelSmall,
+    color: theme.colors.gray600,
+    textAlign: 'center',
+    flex: 1,
+  },
+  progressLabelCompleted: {
+    color: theme.colors.success,
+  },
+  progressLabelActive: {
+    color: theme.colors.primary,
+    fontWeight: '600',
   },
 };
 

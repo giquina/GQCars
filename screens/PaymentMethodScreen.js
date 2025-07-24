@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import theme from '../theme';
-import PaymentService from '../services/PaymentService';
+import paymentService from '../services/PaymentService';
 
 const PaymentMethodScreen = ({ navigation, route }) => {
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -30,7 +30,7 @@ const PaymentMethodScreen = ({ navigation, route }) => {
   const loadPaymentMethods = async () => {
     try {
       setLoading(true);
-      const methods = PaymentService.getStoredPaymentMethods();
+      const methods = paymentService.getStoredPaymentMethods();
       setPaymentMethods(methods);
       
       // Set default method as selected
@@ -48,7 +48,7 @@ const PaymentMethodScreen = ({ navigation, route }) => {
 
   const handleSetDefault = async (paymentMethodId) => {
     try {
-      await PaymentService.setDefaultPaymentMethod(paymentMethodId);
+      await paymentService.setDefaultPaymentMethod(paymentMethodId);
       
       // Update local state
       setPaymentMethods(methods =>
@@ -77,7 +77,7 @@ const PaymentMethodScreen = ({ navigation, route }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await PaymentService.removePaymentMethod(paymentMethodId);
+              await paymentService.removePaymentMethod(paymentMethodId);
               setPaymentMethods(methods =>
                 methods.filter(method => method.id !== paymentMethodId)
               );
@@ -125,8 +125,8 @@ const PaymentMethodScreen = ({ navigation, route }) => {
 
   const renderPaymentMethod = (method) => {
     const isSelected = selectedMethod === method.id;
-    const cardDisplay = PaymentService.getCardDisplay(method);
-    const cardIcon = PaymentService.getCardIcon(method.card.brand);
+    const cardDisplay = paymentService.getCardDisplay(method);
+    const cardIcon = paymentService.getCardIcon(method.card.brand);
 
     return (
       <Card key={method.id} style={styles.paymentMethodCard} elevation="sm">

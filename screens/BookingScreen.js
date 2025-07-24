@@ -10,16 +10,16 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import BookingService from '../services/BookingService';
+import bookingService from '../services/BookingService';
 import theme from '../theme';
+import { useBooking } from '../context/BookingContext';
 
 
 const BookingScreen = ({ navigation, route }) => {
   // Get service info from params
   const { selectedRide, destination, pickup, selectedService, serviceData } = route.params || {};
   const [selectedOfficer, setSelectedOfficer] = useState(null);
-  const [currentBooking, setCurrentBooking] = useState(null);
-  const bookingService = BookingService.getInstance();
+  const { currentBooking } = useBooking();
 
   const officers = [
     {

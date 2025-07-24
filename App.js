@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -17,9 +17,10 @@ import AddPaymentMethodScreen from './screens/AddPaymentMethodScreen';
 import PaymentConfirmationScreen from './screens/PaymentConfirmationScreen';
 import EmergencyScreen from './screens/EmergencyScreen';
 import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
+import TrackRideScreen from './screens/TrackRideScreen';
+import BookingCompleteScreen from './screens/BookingCompleteScreen';
 import theme from './theme';
 import notificationService from './services/NotificationService';
-import bookingService from './services/BookingService';
 import { BookingProvider } from './context/BookingContext';
 
 const Stack = createStackNavigator();
@@ -183,6 +184,18 @@ export default function App() {
           component={RideSelectionScreen}
         />
         <Stack.Screen 
+          name="BookingLocation" 
+          component={require('./screens/BookingLocationScreen').default}
+        />
+        <Stack.Screen 
+          name="BookingDetails" 
+          component={require('./screens/BookingDetailsScreen').default}
+        />
+        <Stack.Screen 
+          name="BookingConfirmation" 
+          component={require('./screens/BookingConfirmationScreen').default}
+        />
+        <Stack.Screen 
           name="Booking" 
           component={BookingScreen}
         />
@@ -209,6 +222,14 @@ export default function App() {
         <Stack.Screen 
           name="EmergencyContacts" 
           component={EmergencyContactsScreen}
+        />
+        <Stack.Screen 
+          name="TrackRide" 
+          component={TrackRideScreen}
+        />
+        <Stack.Screen 
+          name="BookingComplete" 
+          component={BookingCompleteScreen}
         />
         {/* Legacy routes for backwards compatibility */}
         <Stack.Screen 

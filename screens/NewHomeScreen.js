@@ -22,7 +22,7 @@ import EmergencyButton from '../components/ui/EmergencyButton';
 import LocationService from '../services/LocationService';
 import SecurityAssessmentService from '../services/SecurityAssessmentService';
 import OnboardingDataService from '../services/OnboardingDataService';
-import BookingService from '../services/BookingService';
+import bookingService from '../services/BookingService';
 import theme from '../theme';
 
 const { width, height } = Dimensions.get('window');
@@ -176,7 +176,6 @@ const NewHomeScreen = ({ navigation }) => {
   const [mapMode, setMapMode] = useState('none'); // 'pickup', 'dropoff', 'none'
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const locationService = LocationService.getInstance();
-  const bookingService = BookingService.getInstance();
 
   const services = [
     {
@@ -325,25 +324,23 @@ const NewHomeScreen = ({ navigation }) => {
     setDestinationFocused(false);
   };
 
-  // Dynamic CTA text based on selected service
+  // Clear step-by-step CTA text 
   const getBookingButtonText = () => {
     if (!assessmentCompleted) return '🛡️ Complete Security Assessment';
     if (!selectedService) return 'Choose Your Protection Level';
+    if (!pickupCoords || !destinationCoords) return 'Set Pickup & Destination';
     const service = services.find(s => s.id === selectedService);
-    const hasLocations = pickupCoords && destinationCoords;
-
-    if (!hasLocations) {
-      return `🚗 Book ${service.name} Protection`;
-    }
-    const price = calculatePrice(service, hasLocations);
-    return `🚗 Book ${service.name} - ${price}`;
+    return `🚗 Book ${service?.name || 'Service'} Now`;
   };
 
   const getBookingButtonSubtext = () => {
     if (!assessmentCompleted) return 'Required security evaluation before booking';
     if (!selectedService) return 'Choose your preferred service above';
-    if (!pickupCoords || !destinationCoords) return 'Set pickup and destination to see pricing';
-    return 'Estimated arrival: 8-12 minutes';
+    if (!pickupCoords || !destinationCoords) return 'Enter locations to calculate price';
+    const hasLocations = pickupCoords && destinationCoords;
+    const service = services.find(s => s.id === selectedService);
+    const price = hasLocations ? calculatePrice(service, hasLocations) : 'Price TBD';
+    return `Estimated cost: ${price} • Tap to request driver`;
   };
 
   useEffect(() => {
@@ -600,7 +597,13 @@ const NewHomeScreen = ({ navigation }) => {
                       selectedService === service.id && styles.serviceRowSelected,
                       { borderLeftColor: service.color }
                     ]}
-                    onPress={() => setSelectedService(service.id)}
+                    onPress={() => {
+                      setSelectedService(service.id);
+                      // Provide haptic feedback
+                      if (Haptics && Haptics.impactAsync) {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      }
+                    }}
                     activeOpacity={0.8}
                   >
                     <View style={styles.serviceRowContent}>
@@ -682,7 +685,8 @@ const NewHomeScreen = ({ navigation }) => {
             <TouchableOpacity 
               style={[
                 styles.bookButton, 
-                (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.bookButtonDisabled
+                (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.bookButtonDisabled,
+                (selectedService && pickupCoords && destinationCoords && assessmentCompleted) && styles.bookButtonActive
               ]}
               onPress={async () => {
                 if (!assessmentCompleted) {
@@ -1365,6 +1369,15 @@ const styles = {
     backgroundColor: theme.colors.gray400,
     shadowOpacity: 0.1,
   },
+  bookButtonActive: {
+    backgroundColor: theme.colors.success,
+    shadowColor: theme.colors.success,
+    shadowOpacity: 0.6,
+    transform: [{ scale: 1.02 }],
+    elevation: 16,
+    borderWidth: 2,
+    borderColor: theme.colors.surface,
+  },
   safetyIconContainer: {
     width: 32,
     height: 32,
@@ -1558,7 +1571,7 @@ const styles = {
     color: theme.colors.surface,
   },
   extraBottomPadding: {
-    height: 80,
+    height: 120, // Increased to ensure button is always accessible
   },
 };
 

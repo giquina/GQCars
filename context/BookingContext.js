@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import bookingService, { BOOKING_STATUS, SERVICE_TYPES } from '../services/BookingService';
 
 // Initial state
@@ -178,8 +178,23 @@ export const BookingProvider = ({ children }) => {
 
   // Listen for booking updates from service
   useEffect(() => {
-    const unsubscribe = bookingService.addListener((booking) => {
-      dispatch({ type: ActionTypes.SET_CURRENT_BOOKING, payload: booking });
+    const unsubscribe = bookingService.addListener((eventType, data) => {
+      switch (eventType) {
+        case 'booking_created':
+        case 'status_updated':
+          dispatch({ type: ActionTypes.SET_CURRENT_BOOKING, payload: data });
+          break;
+        case 'booking_completed':
+          dispatch({ type: ActionTypes.CLEAR_CURRENT_BOOKING });
+          dispatch({ type: ActionTypes.SET_BOOKING_HISTORY, payload: bookingService.getBookingHistory() });
+          break;
+        case 'initialized':
+          dispatch({ type: ActionTypes.SET_CURRENT_BOOKING, payload: data.currentBooking });
+          dispatch({ type: ActionTypes.SET_BOOKING_HISTORY, payload: data.bookingHistory });
+          break;
+        default:
+          break;
+      }
     });
 
     return unsubscribe;
