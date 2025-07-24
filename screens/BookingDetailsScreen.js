@@ -16,11 +16,9 @@ import Card from '../components/ui/Card';
 import EmergencyButton from '../components/ui/EmergencyButton';
 import bookingService from '../services/BookingService';
 import theme from '../theme';
-import { useBooking } from '../context/BookingContext';
 
 const BookingDetailsScreen = ({ navigation, route }) => {
   const { bookingData } = route.params || {};
-  const { selectedService, setSelectedService, calculatePriceEstimate, priceEstimate, pickupLocation, destinationLocation, isBookingFormComplete } = useBooking();
   
   // Booking details state
   const [selectedDate, setSelectedDate] = useState(new Date());

@@ -12,14 +12,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import bookingService from '../services/BookingService';
 import theme from '../theme';
-import { useBooking } from '../context/BookingContext';
 
 
 const BookingScreen = ({ navigation, route }) => {
   // Get service info from params
   const { selectedRide, destination, pickup, selectedService, serviceData } = route.params || {};
   const [selectedOfficer, setSelectedOfficer] = useState(null);
-  const { currentBooking } = useBooking();
+  const [currentBooking, setCurrentBooking] = useState(null);
 
   const officers = [
     {

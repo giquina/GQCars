@@ -18,18 +18,10 @@ import MapView from '../components/Map/MapView';
 import LocationService from '../services/LocationService';
 import bookingService from '../services/BookingService';
 import theme from '../theme';
-import { useBooking } from '../context/BookingContext';
 
 const BookingLocationScreen = ({ navigation, route }) => {
-  const { 
-    pickupLocation, 
-    setPickupLocation, 
-    destinationLocation, 
-    setDestinationLocation, 
-    isBookingFormComplete, 
-    selectedService 
-  } = useBooking();
-
+  const [pickupLocation, setPickupLocation] = useState('');
+  const [destinationLocation, setDestinationLocation] = useState('');
   const [pickupCoords, setPickupCoords] = useState(null);
   const [destinationCoords, setDestinationCoords] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -256,7 +248,7 @@ const BookingLocationScreen = ({ navigation, route }) => {
           <View style={styles.locationInputs}>
             {/* Pickup Input */}
             <View style={styles.inputWrapper}>
-              <View style={[styles.locationDot, styles.pickupDot]} />
+              <View style={styles.locationDot} style={[styles.locationDot, styles.pickupDot]} />
               <Input
                 placeholder="Enter pickup location"
                 value={pickupLocation}

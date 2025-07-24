@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import bookingService, { BOOKING_STATUS, SERVICE_TYPES } from '../services/BookingService';
 
 // Initial state

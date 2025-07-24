@@ -14,13 +14,11 @@ import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmergencyButton from '../components/ui/EmergencyButton';
 import bookingService from '../services/BookingService';
-import paymentService from '../services/PaymentService';
-import { useBooking } from '../context/BookingContext';
+import PaymentService from '../services/PaymentService';
 import theme from '../theme';
 
 const BookingConfirmationScreen = ({ navigation, route }) => {
   const { bookingDetails } = route.params || {};
-  const { currentBooking, processPayment, cancelBooking, clearCurrentBooking, getCurrentBookingStatus, priceEstimate } = useBooking();
   
   const [isLoading, setIsLoading] = useState(false);
   const [pricingData, setPricingData] = useState(null);
@@ -64,7 +62,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
 
   const loadPaymentMethods = async () => {
     try {
-      const methods = await paymentService.getPaymentMethods();
+      const methods = await PaymentService.getPaymentMethods();
       setPaymentMethods(methods);
       if (methods.length > 0) {
         setSelectedPaymentMethod(methods[0]);
@@ -117,7 +115,7 @@ const BookingConfirmationScreen = ({ navigation, route }) => {
       await bookingService.createBooking(finalBookingData);
 
       // Process payment
-      const paymentResult = await paymentService.processPayment({
+      const paymentResult = await PaymentService.processPayment({
         amount: pricingData.totalPrice,
         paymentMethodId: selectedPaymentMethod.id,
         description: `GQCars ride from ${bookingDetails.pickup.address}`,

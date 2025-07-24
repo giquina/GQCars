@@ -184,18 +184,6 @@ export default function App() {
           component={RideSelectionScreen}
         />
         <Stack.Screen 
-          name="BookingLocation" 
-          component={require('./screens/BookingLocationScreen').default}
-        />
-        <Stack.Screen 
-          name="BookingDetails" 
-          component={require('./screens/BookingDetailsScreen').default}
-        />
-        <Stack.Screen 
-          name="BookingConfirmation" 
-          component={require('./screens/BookingConfirmationScreen').default}
-        />
-        <Stack.Screen 
           name="Booking" 
           component={BookingScreen}
         />
