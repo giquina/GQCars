@@ -578,8 +578,81 @@ const NewHomeScreen = ({ navigation }) => {
           {/* Header with gradient effect */}
           <View style={styles.cardHeader}>
             <View style={styles.headerGradient} />
-            <Text style={styles.sectionTitle}>🛡️ Plan Your Secure Trip</Text>
+            <Text style={styles.sectionTitle}>🛡️ Plan Your Secure Trip ⚡ UPDATED</Text>
             <Text style={styles.sectionSubtitle}>Professional security drivers • Real-time protection</Text>
+          </View>
+
+          {/* BOOKING PROGRESS INDICATOR */}
+          <View style={styles.bookingProgressSection}>
+            <Text style={styles.bookingProgressTitle}>Complete These Steps to Book:</Text>
+            <View style={styles.bookingSteps}>
+              <View style={[styles.bookingStep, assessmentCompleted && styles.bookingStepCompleted]}>
+                <Ionicons name={assessmentCompleted ? "checkmark-circle" : "shield-outline"} size={20} color={assessmentCompleted ? theme.colors.success : theme.colors.gray500} />
+                <Text style={[styles.bookingStepText, assessmentCompleted && styles.bookingStepTextCompleted]}>Security Assessment</Text>
+              </View>
+              <View style={[styles.bookingStep, selectedService && styles.bookingStepCompleted]}>
+                <Ionicons name={selectedService ? "checkmark-circle" : "car-outline"} size={20} color={selectedService ? theme.colors.success : theme.colors.gray500} />
+                <Text style={[styles.bookingStepText, selectedService && styles.bookingStepTextCompleted]}>Choose Service</Text>
+              </View>
+              <View style={[styles.bookingStep, (pickupCoords && destinationCoords) && styles.bookingStepCompleted]}>
+                <Ionicons name={(pickupCoords && destinationCoords) ? "checkmark-circle" : "location-outline"} size={20} color={(pickupCoords && destinationCoords) ? theme.colors.success : theme.colors.gray500} />
+                <Text style={[styles.bookingStepText, (pickupCoords && destinationCoords) && styles.bookingStepTextCompleted]}>Set Locations</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* PROMINENT BOOKING CALL-TO-ACTION - Always Visible */}
+          <View style={styles.prominentBookingSection}>
+            <TouchableOpacity 
+              style={[
+                styles.prominentBookButton, 
+                (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.prominentBookButtonDisabled,
+                (selectedService && pickupCoords && destinationCoords && assessmentCompleted) && styles.prominentBookButtonActive
+              ]}
+              onPress={async () => {
+                if (!assessmentCompleted) {
+                  Alert.alert(
+                    'Security Assessment Required', 
+                    'Please complete your security assessment before booking.',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Start Assessment', onPress: () => navigation.navigate('Assessment') }
+                    ]
+                  );
+                } else if (!selectedService) {
+                  Alert.alert('Select Service', 'Please choose a service type first.');
+                } else if (!pickupCoords || !destinationCoords) {
+                  Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
+                } else {
+                  try {
+                    // Start booking with BookingService
+                    const serviceData = services.find(s => s.id === selectedService);
+                    await bookingService.startBooking({
+                      pickupLocation: { coords: pickupCoords, address: pickupAddress },
+                      destinationLocation: { coords: destinationCoords, address: destinationAddress },
+                      selectedService: serviceData
+                    });
+
+                    // Navigate to ride selection with booking data
+                    navigation.navigate('RideSelection', { 
+                      pickup: { coords: pickupCoords, address: pickupAddress },
+                      destination: { coords: destinationCoords, address: destinationAddress },
+                      selectedService: selectedService,
+                      serviceData: serviceData
+                    });
+                  } catch (error) {
+                    console.error('Error starting booking:', error);
+                    Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
+                  }
+                }
+              }}
+            >
+              <View style={styles.prominentBookButtonContent}>
+                <Text style={styles.prominentBookButtonText}>{getBookingButtonText()}</Text>
+                <Text style={styles.prominentBookButtonSubtext}>{getBookingButtonSubtext()}</Text>
+              </View>
+              <Ionicons name="arrow-forward-circle" size={32} color={theme.colors.surface} />
+            </TouchableOpacity>
           </View>
           
           {/* Trip Planning Section */}
@@ -1572,6 +1645,100 @@ const styles = {
   },
   extraBottomPadding: {
     height: 120, // Increased to ensure button is always accessible
+  },
+  
+  // BOOKING PROGRESS SECTION STYLES
+  bookingProgressSection: {
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    padding: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  bookingProgressTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+  },
+  bookingSteps: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  bookingStep: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xs,
+  },
+  bookingStepCompleted: {
+    backgroundColor: theme.colors.success + '20',
+    borderRadius: 8,
+  },
+  bookingStepText: {
+    fontSize: 12,
+    color: theme.colors.gray500,
+    marginTop: theme.spacing.xs,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  bookingStepTextCompleted: {
+    color: theme.colors.success,
+    fontWeight: '600',
+  },
+  
+  // PROMINENT BOOKING SECTION STYLES
+  prominentBookingSection: {
+    marginHorizontal: theme.spacing.lg,
+    marginVertical: theme.spacing.lg,
+    elevation: 8,
+    shadowColor: theme.colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  prominentBookButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 20,
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 3,
+    borderColor: theme.colors.primaryDark,
+    minHeight: 80,
+  },
+  prominentBookButtonDisabled: {
+    backgroundColor: theme.colors.gray400,
+    borderColor: theme.colors.gray500,
+    shadowOpacity: 0.1,
+  },
+  prominentBookButtonActive: {
+    backgroundColor: theme.colors.success,
+    borderColor: theme.colors.surface,
+    shadowColor: theme.colors.success,
+    shadowOpacity: 0.5,
+    transform: [{ scale: 1.02 }],
+  },
+  prominentBookButtonContent: {
+    flex: 1,
+  },
+  prominentBookButtonText: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: theme.colors.surface,
+    marginBottom: 4,
+  },
+  prominentBookButtonSubtext: {
+    fontSize: 14,
+    color: theme.colors.surface,
+    opacity: 0.9,
+    fontWeight: '500',
   },
 };
 
