@@ -15,6 +15,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import EmergencyButton from '../components/ui/EmergencyButton';
 import SecurityAssessmentService from '../services/SecurityAssessmentService';
+import BookingService from '../services/BookingService';
 import theme from '../theme';
 
 const { width, height } = Dimensions.get('window');
@@ -61,9 +62,10 @@ const rideOptions = [
 const RideSelectionScreen = ({ navigation, route }) => {
   const [selectedRide, setSelectedRide] = useState(rideOptions[1]); // Default to Normal
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
-  const { destination } = route.params || {};
+  const { destination, pickup, selectedService, serviceData } = route.params || {};
+  const bookingService = BookingService.getInstance();
 
-  const handleSelectRide = () => {
+  const handleSelectRide = async () => {
     if (!assessmentCompleted) {
       Alert.alert(
         'Security Assessment Required', 
@@ -76,10 +78,22 @@ const RideSelectionScreen = ({ navigation, route }) => {
       return;
     }
     
-    navigation.navigate('DriverConnection', {
-      selectedRide,
-      destination,
-    });
+    try {
+      // Update booking with selected ride
+      await bookingService.selectRide(selectedRide);
+      
+      // Navigate to officer selection (BookingScreen)
+      navigation.navigate('Booking', {
+        selectedRide,
+        destination,
+        pickup,
+        selectedService,
+        serviceData
+      });
+    } catch (error) {
+      console.error('Error selecting ride:', error);
+      Alert.alert('Booking Error', 'Unable to proceed with ride selection. Please try again.');
+    }
   };
 
   useEffect(() => {

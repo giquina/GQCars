@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingScreen from './screens/OnboardingScreen';
 import NewHomeScreen from './screens/NewHomeScreen';
 import RideSelectionScreen from './screens/RideSelectionScreen';
+import BookingScreen from './screens/BookingScreen';
 import DriverConnectionScreen from './screens/DriverConnectionScreen';
 import AccountScreen from './screens/AccountScreen';
 import PaymentMethodScreen from './screens/PaymentMethodScreen';
@@ -18,6 +19,8 @@ import EmergencyScreen from './screens/EmergencyScreen';
 import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
 import theme from './theme';
 import notificationService from './services/NotificationService';
+import bookingService from './services/BookingService';
+import { BookingProvider } from './context/BookingContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -154,7 +157,8 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer ref={navigationRef} theme={navigationTheme}>
+    <BookingProvider>
+      <NavigationContainer ref={navigationRef} theme={navigationTheme}>
       <StatusBar style="dark" backgroundColor={theme.colors.background} />
       <Stack.Navigator
         initialRouteName="Onboarding"
@@ -177,6 +181,10 @@ export default function App() {
         <Stack.Screen 
           name="RideSelection" 
           component={RideSelectionScreen}
+        />
+        <Stack.Screen 
+          name="Booking" 
+          component={BookingScreen}
         />
         <Stack.Screen 
           name="DriverConnection" 
@@ -212,14 +220,11 @@ export default function App() {
           component={RideSelectionScreen}
         />
         <Stack.Screen 
-          name="Booking" 
-          component={DriverConnectionScreen}
-        />
-        <Stack.Screen 
           name="Profile" 
           component={AccountScreen}
         />
       </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
+    </BookingProvider>
   );
 }

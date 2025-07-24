@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,19 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import BookingService from '../services/BookingService';
+import theme from '../theme';
 
 
 const BookingScreen = ({ navigation, route }) => {
   // Get service info from params
-  const { service, riskLevel, riskScore, answers } = route.params;
+  const { selectedRide, destination, pickup, selectedService, serviceData } = route.params || {};
   const [selectedOfficer, setSelectedOfficer] = useState(null);
+  const [currentBooking, setCurrentBooking] = useState(null);
+  const bookingService = BookingService.getInstance();
 
   const officers = [
     {
@@ -75,27 +80,89 @@ const BookingScreen = ({ navigation, route }) => {
     },
   ];
 
-  const handleOfficerSelect = (officer) => {
+  const handleOfficerSelect = async (officer) => {
     setSelectedOfficer(officer);
+    try {
+      await bookingService.selectOfficer(officer);
+      console.log('Officer selected in booking service:', officer.name);
+    } catch (error) {
+      console.error('Error selecting officer:', error);
+      Alert.alert('Selection Error', 'Unable to select officer. Please try again.');
+    }
   };
 
   const viewProfile = (officer) => {
-    navigation.navigate('Profile', { officer, service, riskLevel });
+    // Navigate to a profile view (could be implemented later)
+    Alert.alert(
+      `${officer.name} - ${officer.rank}`,
+      `Experience: ${officer.experience}\nSpecialties: ${officer.specialties.join(', ')}\nRating: ${officer.rating}/5 (${officer.reviews} reviews)\n\nBackground: ${officer.background}`,
+      [{ text: 'Close', style: 'default' }]
+    );
   };
 
-  const proceedToBooking = () => {
-    if (!selectedOfficer) return;
+  const proceedToBooking = async () => {
+    if (!selectedOfficer) {
+      Alert.alert('Select Officer', 'Please select a security officer to proceed.');
+      return;
+    }
     
-    // In a real app, this would navigate to a booking confirmation screen
-    alert(`Booking confirmed with ${selectedOfficer.name}!\n\nService: ${service.name}\nOfficer: ${selectedOfficer.name}\nRate: ${service.price}\n\nYou will receive confirmation details shortly.`);
+    try {
+      // Navigate to payment method selection
+      navigation.navigate('PaymentMethod', {
+        selectedRide,
+        destination,
+        pickup,
+        selectedService,
+        serviceData,
+        selectedOfficer,
+        currentBooking
+      });
+    } catch (error) {
+      console.error('Error proceeding to payment:', error);
+      Alert.alert('Navigation Error', 'Unable to proceed to payment. Please try again.');
+    }
   };
+
+  useEffect(() => {
+    // Load current booking data
+    const booking = bookingService.getCurrentBooking();
+    setCurrentBooking(booking);
+    
+    // Set up listener for booking updates
+    const unsubscribe = bookingService.addListener((updatedBooking) => {
+      setCurrentBooking(updatedBooking);
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header with back button */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Select Security Officer</Text>
+        <View style={styles.headerSpacer} />
+      </View>
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.serviceInfo}>
-          <Text style={styles.serviceTitle}>Selected Service: {service?.label || 'GQCars Secure Ride'}</Text>
-          {/* You can add more dynamic info here if needed */}
+          <Text style={styles.serviceTitle}>
+            {selectedRide?.name || 'Premium'} Security Service
+          </Text>
+          <Text style={styles.serviceSubtitle}>
+            {pickup?.address} → {destination?.address}
+          </Text>
+          {currentBooking && (
+            <Text style={styles.estimatedPrice}>
+              Estimated Cost: £{currentBooking.estimatedPrice?.toFixed(2) || '0.00'}
+            </Text>
+          )}
         </View>
 
         <Text style={styles.sectionTitle}>Available CP Officers</Text>

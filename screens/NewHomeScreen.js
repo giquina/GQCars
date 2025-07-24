@@ -22,6 +22,7 @@ import EmergencyButton from '../components/ui/EmergencyButton';
 import LocationService from '../services/LocationService';
 import SecurityAssessmentService from '../services/SecurityAssessmentService';
 import OnboardingDataService from '../services/OnboardingDataService';
+import BookingService from '../services/BookingService';
 import theme from '../theme';
 
 const { width, height } = Dimensions.get('window');
@@ -175,6 +176,7 @@ const NewHomeScreen = ({ navigation }) => {
   const [mapMode, setMapMode] = useState('none'); // 'pickup', 'dropoff', 'none'
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const locationService = LocationService.getInstance();
+  const bookingService = BookingService.getInstance();
 
   const services = [
     {
@@ -682,7 +684,7 @@ const NewHomeScreen = ({ navigation }) => {
                 styles.bookButton, 
                 (!selectedService || !pickupCoords || !destinationCoords || !assessmentCompleted) && styles.bookButtonDisabled
               ]}
-              onPress={() => {
+              onPress={async () => {
                 if (!assessmentCompleted) {
                   Alert.alert(
                     'Security Assessment Required', 
@@ -697,11 +699,26 @@ const NewHomeScreen = ({ navigation }) => {
                 } else if (!pickupCoords || !destinationCoords) {
                   Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
                 } else {
-                  navigation.navigate('RideSelection', { 
-                    pickup: { coords: pickupCoords, address: pickupAddress },
-                    destination: { coords: destinationCoords, address: destinationAddress },
-                    selectedService: selectedService
-                  });
+                  try {
+                    // Start booking with BookingService
+                    const serviceData = services.find(s => s.id === selectedService);
+                    await bookingService.startBooking({
+                      pickupLocation: { coords: pickupCoords, address: pickupAddress },
+                      destinationLocation: { coords: destinationCoords, address: destinationAddress },
+                      selectedService: serviceData
+                    });
+
+                    // Navigate to ride selection with booking data
+                    navigation.navigate('RideSelection', { 
+                      pickup: { coords: pickupCoords, address: pickupAddress },
+                      destination: { coords: destinationCoords, address: destinationAddress },
+                      selectedService: selectedService,
+                      serviceData: serviceData
+                    });
+                  } catch (error) {
+                    console.error('Error starting booking:', error);
+                    Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
+                  }
                 }
               }}
             >
@@ -711,6 +728,9 @@ const NewHomeScreen = ({ navigation }) => {
               </View>
               <Ionicons name="arrow-forward" size={20} color={theme.colors.surface} />
             </TouchableOpacity>
+            
+            {/* Extra bottom padding to ensure button is accessible */}
+            <View style={styles.extraBottomPadding} />
           </View>
 
 
@@ -766,15 +786,6 @@ const NewHomeScreen = ({ navigation }) => {
         </View>
       </Animated.View>
 
-      {/* Floating Emergency Button */}
-      <View style={styles.floatingEmergencyButton}>
-        <EmergencyButton
-          size="medium"
-          onEmergencyActivated={() => {
-            navigation.navigate('Emergency');
-          }}
-        />
-      </View>
 
       {/* Navigation Menu */}
       <NavigationMenu
@@ -1546,12 +1557,8 @@ const styles = {
     fontWeight: '700',
     color: theme.colors.surface,
   },
-  floatingEmergencyButton: {
-    position: 'absolute',
-    bottom: 100,
-    right: theme.spacing.lg,
-    zIndex: 1000,
-    ...theme.shadows.xl,
+  extraBottomPadding: {
+    height: 80,
   },
 };
 

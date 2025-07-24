@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -338,7 +338,7 @@ const OnboardingScreen = ({ navigation }) => {
                     <Text style={[
                       styles.optionChipText,
                       selectedAnswer?.value === option.value && styles.optionChipTextSelected
-                    ]} numberOfLines={2}>
+                    ]}>
                       {option.label.replace(/^[🔴🟠🟡🟢👔🏢🔒🎭☀️🌅🌙🚨]\s*/, '')}
                     </Text>
 
@@ -350,40 +350,40 @@ const OnboardingScreen = ({ navigation }) => {
                 </TouchableOpacity>
               ))}
             </View>
+            
+            {/* Bottom Button in ScrollView */}
+            <View style={styles.questionBottomInline}>
+              <Button
+                title={currentIndex === onboardingData.length - 1 ? 'Complete Setup' : 'Continue'}
+                onPress={handleNext}
+                style={[
+                  styles.questionButton,
+                  { backgroundColor: item.color },
+                  !selectedAnswer && styles.buttonDisabled
+                ]}
+                disabled={!selectedAnswer}
+              />
+              
+              {/* Progress indicator */}
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  <View 
+                    style={[
+                      styles.progressFill, 
+                      { 
+                        width: `${((currentIndex + 1) / onboardingData.length) * 100}%`,
+                        backgroundColor: item.color 
+                      }
+                    ]} 
+                  />
+                </View>
+                <Text style={styles.progressText}>
+                  {currentIndex + 1} of {onboardingData.length}
+                </Text>
+              </View>
+            </View>
           </View>
         </ScrollView>
-        
-        {/* Fixed Bottom Button Area */}
-        <View style={styles.questionBottomFixed}>
-          <Button
-            title={currentIndex === onboardingData.length - 1 ? 'Complete Setup' : 'Continue'}
-            onPress={handleNext}
-            style={[
-              styles.questionButton,
-              { backgroundColor: item.color },
-              !selectedAnswer && styles.buttonDisabled
-            ]}
-            disabled={!selectedAnswer}
-          />
-          
-          {/* Progress indicator */}
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View 
-                style={[
-                  styles.progressFill, 
-                  { 
-                    width: `${((currentIndex + 1) / onboardingData.length) * 100}%`,
-                    backgroundColor: item.color 
-                  }
-                ]} 
-              />
-            </View>
-            <Text style={styles.progressText}>
-              {currentIndex + 1} of {onboardingData.length}
-            </Text>
-          </View>
-        </View>
       </View>
     );
   };
@@ -751,8 +751,9 @@ const styles = {
     paddingVertical: theme.spacing.lg,
     borderWidth: 2,
     borderColor: theme.colors.gray200,
-    minWidth: '47%',
-    maxWidth: '47%',
+    minWidth: '48%',
+    maxWidth: '48%',
+    minHeight: 90,
     shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -768,9 +769,10 @@ const styles = {
   },
   optionChipContent: {
     alignItems: 'center',
-    minHeight: 60,
+    minHeight: 70,
     justifyContent: 'center',
     position: 'relative',
+    paddingVertical: theme.spacing.xs,
   },
   optionEmojiContainer: {
     marginBottom: theme.spacing.sm,
@@ -800,22 +802,22 @@ const styles = {
     fontWeight: '600',
   },
   optionChipText: {
-    fontSize: 12,
+    fontSize: 13,
     color: theme.colors.text,
     textAlign: 'center',
     fontWeight: '500',
-    lineHeight: 15,
+    lineHeight: 16,
+    marginHorizontal: theme.spacing.xs,
+    flexWrap: 'wrap',
   },
   optionChipTextSelected: {
     color: theme.colors.surface,
     fontWeight: '600',
   },
-  questionBottomFixed: {
-    backgroundColor: theme.colors.background,
+  questionBottomInline: {
     paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.gray100,
+    paddingVertical: theme.spacing.xl,
+    marginTop: theme.spacing.lg,
   },
   questionButton: {
     borderRadius: 16,

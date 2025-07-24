@@ -39,6 +39,9 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
           { text: 'OK', style: 'default' }
         ]);
         break;
+      case 'emergencyAlert':
+        navigation.navigate('Emergency');
+        break;
       case 'support':
         Alert.alert('Customer Support', 'Need help? Contact us:\n\n📞 24/7 Hotline: +44 20 1234 5678\n📧 Email: support@gqcars.com\n💬 Live Chat: Available in app', [
           { text: 'Call Now', onPress: () => console.log('Call support') },
@@ -107,6 +110,14 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
           icon: 'people-outline',
           description: 'Trusted contacts for alerts',
           action: 'emergency'
+        },
+        {
+          id: 'emergencyAlert',
+          title: 'Emergency Alert',
+          icon: 'warning',
+          description: 'Activate emergency assistance',
+          action: 'emergencyAlert',
+          isEmergency: true
         },
         {
           id: 'securityAssessment',
@@ -188,13 +199,13 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
               {section.items.map((item) => (
                 <TouchableOpacity
                   key={item.id}
-                  style={styles.menuItem}
+                  style={[styles.menuItem, item.isEmergency && styles.emergencyMenuItem]}
                   onPress={() => handleMenuPress(item.action)}
                   activeOpacity={0.7}
                 >
                   <View style={styles.menuItemLeft}>
                     <View style={styles.menuItemIcon}>
-                      <Ionicons name={item.icon} size={22} color={theme.colors.primary} />
+                      <Ionicons name={item.icon} size={22} color={item.isEmergency ? theme.colors.error : theme.colors.primary} />
                       {item.showBadge && (
                         <View style={styles.redBadge}>
                           <Text style={styles.redBadgeText}>!</Text>
@@ -417,6 +428,11 @@ const styles = {
   menuItemDescriptionUrgent: {
     color: '#DC2626',
     fontWeight: '500',
+  },
+  emergencyMenuItem: {
+    borderWidth: 2,
+    borderColor: theme.colors.error + '40',
+    backgroundColor: theme.colors.error + '05',
   },
 };
 
