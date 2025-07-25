@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import * as Location from 'expo-location';
+import { View, StyleSheet, Alert, Platform } from 'react-native';
+
+// Platform-conditional imports
+let MapView, Marker, PROVIDER_GOOGLE, Location;
+
+if (Platform.OS !== 'web') {
+  const MapModule = require('react-native-maps');
+  MapView = MapModule.default;
+  Marker = MapModule.Marker;
+  PROVIDER_GOOGLE = MapModule.PROVIDER_GOOGLE;
+  Location = require('expo-location');
+}
 import theme from '../../theme';
 
 const GQMapView = ({ 
@@ -30,6 +39,12 @@ const GQMapView = ({
 
   const getCurrentLocation = async () => {
     try {
+      if (Platform.OS === 'web') {
+        // Web fallback - skip location services for now
+        setLocationPermission(false);
+        return;
+      }
+
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -62,17 +77,21 @@ const GQMapView = ({
       setRegion(newRegion);
 
       // Animate to user location
-      if (mapRef.current) {
+      if (mapRef.current && Platform.OS !== 'web') {
         mapRef.current.animateToRegion(newRegion, 1000);
       }
 
     } catch (error) {
       console.error('Error getting location:', error);
-      Alert.alert('Location Error', 'Could not get your current location.');
+      if (Platform.OS !== 'web') {
+        Alert.alert('Location Error', 'Could not get your current location.');
+      }
     }
   };
 
   const fitToMarkers = () => {
+    if (Platform.OS === 'web') return; // Skip on web
+    
     if (mapRef.current && (pickupLocation || destination)) {
       const markers = [];
       if (pickupLocation) markers.push(pickupLocation);
@@ -99,6 +118,20 @@ const GQMapView = ({
       onLocationSelect(coordinate);
     }
   };
+
+  if (Platform.OS === 'web') {
+    // Web fallback - return the web-compatible map component
+    const WebMapView = require('./MapView.web.js').default;
+    return (
+      <WebMapView
+        style={style}
+        pickupLocation={pickupLocation}
+        destination={destination}
+        onLocationSelect={onLocationSelect}
+        {...props}
+      />
+    );
+  }
 
   return (
     <View style={[styles.container, style]}>

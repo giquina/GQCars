@@ -13,6 +13,37 @@ class BookingService {
     this.currentBooking = null;
     this.bookingHistory = [];
     this.locationService = LocationService.getInstance();
+    this.isInitialized = false;
+  }
+
+  // Initialize the booking service
+  async initialize() {
+    try {
+      if (this.isInitialized) {
+        console.log('BookingService already initialized');
+        return true;
+      }
+
+      console.log('Initializing BookingService...');
+      
+      // Load any existing booking from storage
+      await this.loadBookingFromStorage();
+      
+      // Load booking history
+      this.bookingHistory = await this.getBookingHistory();
+      
+      // Mark as initialized
+      this.isInitialized = true;
+      
+      // Notify listeners that service is initialized
+      this.notifyListeners();
+      
+      console.log('BookingService initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('Error initializing BookingService:', error);
+      throw error;
+    }
   }
 
 
@@ -411,51 +442,70 @@ class BookingService {
     }
   }
 
-  async startBooking(bookingData) {
-    // Helper method for starting a booking flow
-    try {
-      const distance = this.calculateDistance(
-        bookingData.pickupLocation?.coords,
-        bookingData.destinationLocation?.coords
-      );
 
-      const bookingDetails = {
-        pickup: bookingData.pickupLocation,
-        destination: bookingData.destinationLocation,
-        serviceType: bookingData.selectedService || SERVICE_TYPES.STANDARD,
-        distance: distance,
-        estimatedDuration: Math.max(10, distance * 2), // Estimate 2 minutes per km
-      };
 
-      return await this.createBooking(bookingDetails);
-    } catch (error) {
-      console.error('Failed to start booking:', error);
-      throw error;
-    }
-  }
-
-  async clearCurrentBooking() {
-    this.currentBooking = null;
-    await AsyncStorage.removeItem('@gqcars:current_booking');
-    this.emit('booking_cleared', null);
-  }
-
-  calculateDistance(coord1, coord2) {
-    if (!coord1 || !coord2) return 5; // Default distance
-    
-    // Haversine formula for distance calculation
-    const R = 6371; // Earth's radius in km
-    const dLat = (coord2.latitude - coord1.latitude) * Math.PI / 180;
-    const dLon = (coord2.longitude - coord1.longitude) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(coord1.latitude * Math.PI / 180) * Math.cos(coord2.latitude * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
+  // Simple event emitter for compatibility
+  emit(event, data) {
+    console.log(`BookingService event: ${event}`, data);
+    this.notifyListeners();
   }
 }
 
 // Export singleton instance
 const bookingServiceInstance = new BookingService();
 export default bookingServiceInstance;
+
+// Export booking status constants
+export const BOOKING_STATUS = {
+  IDLE: 'idle',
+  SERVICE_SELECTED: 'service_selected', 
+  RIDE_SELECTED: 'ride_selected',
+  OFFICER_SELECTED: 'officer_selected',
+  PAYMENT_READY: 'payment_ready',
+  PROCESSING_PAYMENT: 'processing_payment',
+  CONFIRMED: 'confirmed',
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  PAYMENT_FAILED: 'payment_failed',
+  ERROR: 'error'
+};
+
+// Export service type constants
+export const SERVICE_TYPES = {
+  STANDARD: {
+    id: 'standard',
+    name: 'Standard Protection',
+    description: 'Professional security transport with trained officers',
+    basePrice: 25.00,
+    features: ['SIA Licensed Officers', 'Real-time Tracking', 'Emergency Support']
+  },
+  EXECUTIVE: {
+    id: 'executive', 
+    name: 'Executive Protection',
+    description: 'Enhanced security with advanced threat assessment',
+    basePrice: 45.00,
+    features: ['Elite Protection Officers', 'Route Optimization', 'Discrete Service', 'Priority Response']
+  },
+  XL: {
+    id: 'xl',
+    name: 'Group Protection', 
+    description: 'Security transport for multiple passengers',
+    basePrice: 65.00,
+    features: ['Larger Vehicles', 'Multiple Officers', 'Group Coordination', 'Enhanced Security']
+  },
+  AIRPORT_TRANSFER: {
+    id: 'airport-transfer',
+    name: 'Airport Transfer',
+    description: 'Specialized airport security transport service',
+    basePrice: 35.00,
+    features: ['Flight Monitoring', 'Meet & Greet', 'Luggage Assistance', 'Terminal Navigation']
+  },
+  EVENT_SECURITY: {
+    id: 'event-security',
+    name: 'Event Security',
+    description: 'Comprehensive security for events and occasions',
+    basePrice: 85.00,
+    features: ['Event Planning', 'Venue Security', 'Crowd Management', 'VIP Protection']
+  }
+};

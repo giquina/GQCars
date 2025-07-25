@@ -7,7 +7,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppState } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OnboardingScreen from './screens/OnboardingScreen';
-import NewHomeScreen from './screens/NewHomeScreen';
+import HomeScreen from './screens/HomeScreen';
+import ServicesScreen from './screens/ServicesScreen';
+import TripsScreen from './screens/TripsScreen';
+import AssessmentScreen from './screens/AssessmentScreen';
 import RideSelectionScreen from './screens/RideSelectionScreen';
 import BookingScreen from './screens/BookingScreen';
 import DriverConnectionScreen from './screens/DriverConnectionScreen';
@@ -35,6 +38,10 @@ function MainTabs() {
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Services') {
+            iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
+          } else if (route.name === 'Trips') {
+            iconName = focused ? 'car' : 'car-outline';
           } else if (route.name === 'Account') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -50,7 +57,7 @@ function MainTabs() {
           height: 60,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11, // Slightly smaller for 4 tabs
           fontWeight: '500',
         },
         headerShown: false,
@@ -58,8 +65,18 @@ function MainTabs() {
     >
       <Tab.Screen 
         name="Home" 
-        component={NewHomeScreen}
+        component={HomeScreen}
         options={{ title: 'Home' }}
+      />
+      <Tab.Screen 
+        name="Services" 
+        component={ServicesScreen}
+        options={{ title: 'Drivers' }}
+      />
+      <Tab.Screen 
+        name="Trips" 
+        component={TripsScreen}
+        options={{ title: 'Trips' }}
       />
       <Tab.Screen 
         name="Account" 
@@ -82,6 +99,7 @@ export default function App() {
         console.log('Notification service initialized successfully');
       } catch (error) {
         console.error('Failed to initialize notification service:', error);
+        // Don't fail the app if notifications fail to initialize
       }
     };
 
@@ -222,7 +240,7 @@ export default function App() {
         {/* Legacy routes for backwards compatibility */}
         <Stack.Screen 
           name="Assessment" 
-          component={NewHomeScreen}
+          component={AssessmentScreen}
         />
         <Stack.Screen 
           name="Service" 

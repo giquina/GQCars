@@ -26,8 +26,9 @@ const DriverConnectionScreen = ({ navigation, route }) => {
     car: 'Toyota Camry',
     plateNumber: 'ABC 123',
     eta: '3 min',
-    credentials: 'Licensed Security Driver',
-    experience: 'Professional Driver Since 2018',
+    credentials: 'Licensed Security Officer',
+    experience: 'SIA Certified • Professional Security Since 2018',
+    badges: ['SIA Licensed', 'Background Checked', 'Close Protection'],
   };
 
   useEffect(() => {
@@ -74,7 +75,7 @@ const DriverConnectionScreen = ({ navigation, route }) => {
         return (
           <View style={styles.statusContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.statusTitle}>Finding your security driver</Text>
+            <Text style={styles.statusTitle}>Finding your security officer</Text>
             <Text style={styles.statusSubtitle}>Connecting you with a licensed security professional</Text>
           </View>
         );
@@ -84,8 +85,8 @@ const DriverConnectionScreen = ({ navigation, route }) => {
             <View style={styles.successIcon}>
               <Ionicons name="checkmark-circle" size={48} color={theme.colors.primary} />
             </View>
-            <Text style={styles.statusTitle}>Licensed driver found!</Text>
-            <Text style={styles.statusSubtitle}>Your background-checked security driver is on the way</Text>
+            <Text style={styles.statusTitle}>Security officer found!</Text>
+            <Text style={styles.statusSubtitle}>Your licensed security officer is on the way</Text>
           </View>
         );
       case 'arriving':
@@ -94,7 +95,7 @@ const DriverConnectionScreen = ({ navigation, route }) => {
             <View style={styles.carIcon}>
               <Ionicons name="car" size={32} color={theme.colors.primary} />
             </View>
-            <Text style={styles.statusTitle}>Your security driver is arriving</Text>
+            <Text style={styles.statusTitle}>Your security officer is arriving</Text>
             <Text style={styles.statusSubtitle}>ETA: {driverData.eta}</Text>
           </View>
         );
@@ -115,7 +116,7 @@ const DriverConnectionScreen = ({ navigation, route }) => {
         >
           <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Your Ride</Text>
+        <Text style={styles.headerTitle}>Security Transport</Text>
         <View style={styles.headerRight}>
           <EmergencyButton 
             size="small"
@@ -142,12 +143,11 @@ const DriverConnectionScreen = ({ navigation, route }) => {
             <Text style={styles.driverName}>{driverData.name}</Text>
             <Text style={styles.driverCredentials}>{driverData.credentials}</Text>
             <View style={styles.credentialsBadges}>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>Background Checked ✓</Text>
-              </View>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>Security Trained ✓</Text>
-              </View>
+              {driverData.badges.map((badge, index) => (
+                <View key={index} style={styles.badge}>
+                  <Text style={styles.badgeText}>{badge}</Text>
+                </View>
+              ))}
             </View>
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={16} color="#FFD700" />
@@ -220,7 +220,7 @@ const DriverConnectionScreen = ({ navigation, route }) => {
       <View style={styles.actionButtons}>
         {connectionStatus === 'arriving' && (
           <Button
-            title="Track Driver"
+            title="Track Security Officer"
             variant="outline"
             style={styles.trackButton}
             onPress={() => navigation.navigate('TrackRide')}
@@ -242,7 +242,7 @@ const DriverConnectionScreen = ({ navigation, route }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -252,12 +252,20 @@ const styles = {
     paddingVertical: theme.spacing.md,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.gray100,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   headerTitle: {
     ...theme.typography.headlineSmall,
@@ -271,6 +279,17 @@ const styles = {
   driverCard: {
     marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: theme.spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   driverInfo: {
     flexDirection: 'row',
@@ -281,10 +300,10 @@ const styles = {
     marginRight: theme.spacing.md,
   },
   driverPhoto: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: theme.colors.gray200,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#E5E7EB',
   },
   onlineIndicator: {
     position: 'absolute',
@@ -302,15 +321,17 @@ const styles = {
   },
   driverName: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    color: '#1F2937',
+    fontWeight: '700',
+    fontSize: 20,
   },
   driverCredentials: {
     ...theme.typography.labelMedium,
-    color: theme.colors.primary,
+    color: '#00C851',
     fontWeight: '600',
-    marginTop: 2,
-    marginBottom: 6,
+    marginTop: 4,
+    marginBottom: 8,
+    fontSize: 14,
   },
   credentialsBadges: {
     flexDirection: 'row',
@@ -318,15 +339,18 @@ const styles = {
     marginBottom: 4,
   },
   badge: {
-    backgroundColor: theme.colors.primary + '20',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
+    backgroundColor: '#00C851' + '15',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#00C851' + '30',
   },
   badgeText: {
     ...theme.typography.labelSmall,
-    color: theme.colors.primary,
-    fontSize: 10,
+    color: '#00C851',
+    fontSize: 11,
+    fontWeight: '600',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -350,12 +374,20 @@ const styles = {
     color: theme.colors.textSecondary,
   },
   callButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: theme.colors.primary,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#00C851',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#00C851',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   statusSection: {
     alignItems: 'center',
@@ -378,25 +410,40 @@ const styles = {
   },
   statusTitle: {
     ...theme.typography.headlineSmall,
-    color: theme.colors.text,
+    color: '#1F2937',
     textAlign: 'center',
     marginTop: theme.spacing.md,
     marginBottom: theme.spacing.sm,
+    fontSize: 22,
+    fontWeight: '700',
   },
   statusSubtitle: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.textSecondary,
+    color: '#6B7280',
     textAlign: 'center',
+    fontSize: 16,
   },
   tripCard: {
     marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: theme.spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   tripTitle: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    color: '#1F2937',
+    fontWeight: '700',
     marginBottom: theme.spacing.md,
+    fontSize: 18,
   },
   tripRoute: {
     marginBottom: theme.spacing.lg,
@@ -465,8 +512,9 @@ const styles = {
   },
   totalPrice: {
     ...theme.typography.titleLarge,
-    color: theme.colors.primary,
-    fontWeight: '700',
+    color: '#00C851',
+    fontWeight: '800',
+    fontSize: 20,
   },
   actionButtons: {
     paddingHorizontal: theme.spacing.lg,

@@ -41,6 +41,13 @@ class NotificationService {
         return;
       }
 
+      // Skip notification initialization on web for now
+      if (Platform.OS === 'web') {
+        console.log('Notification service disabled on web');
+        this.isInitialized = true;
+        return true;
+      }
+
       // Request permission for notifications
       const hasPermission = await this.requestPermission();
       if (!hasPermission) {

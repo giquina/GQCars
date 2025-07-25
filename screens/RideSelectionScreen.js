@@ -23,39 +23,39 @@ const { width, height } = Dimensions.get('window');
 const rideOptions = [
   {
     id: 1,
-    name: 'Economy',
-    description: 'Licensed security driver',
-    features: ['Professional driver', 'Up to 4 passengers', 'Standard vehicle'],
+    name: 'Standard',
+    description: 'Private Hire with Security Driver',
+    features: ['SIA Licensed Driver', 'TFL Approved Vehicle', 'Professional minicab', 'Up to 4 passengers'],
     price: '$1.99',
     eta: '2 min',
-    icon: 'car-outline',
+    icon: 'shield-outline',
     popular: false,
-    color: '#6B7280',
+    color: '#1a1a1a',
     savings: null,
   },
   {
     id: 2,
-    name: 'Comfort',
-    description: 'Licensed security driver',
-    features: ['Professional driver', 'Up to 4 passengers', 'Premium vehicle', 'Enhanced comfort'],
+    name: 'Premium',
+    description: 'Premium Private Hire with Security',
+    features: ['SIA Licensed Driver', 'Enhanced protection training', 'Premium TFL vehicle', 'Enhanced security'],
     price: '$5.99',
     eta: '3 min',
-    icon: 'car-sport-outline',
+    icon: 'shield-checkmark',
     popular: true,
     color: '#00C851',
     savings: 'Most Popular',
   },
   {
     id: 3,
-    name: 'Premium',
-    description: 'Licensed security driver',
-    features: ['Professional driver', 'Up to 6 passengers', 'Luxury vehicle', 'VIP service'],
-    price: '$6.00',
+    name: 'Executive',
+    description: 'VIP Private Hire with Security',
+    features: ['SIA Licensed Driver', 'Executive protection', 'Luxury TFL vehicle', 'VIP taxi service'],
+    price: '$8.50',
     eta: '5 min',
-    icon: 'bus-outline',
+    icon: 'shield-checkmark-outline',
     popular: false,
     color: '#FF6B35',
-    savings: 'Executive',
+    savings: 'VIP Service',
   },
 ];
 
@@ -169,13 +169,13 @@ const RideSelectionScreen = ({ navigation, route }) => {
           <View style={styles.progressLabels}>
             <Text style={[styles.progressLabel, styles.progressLabelCompleted]}>Service</Text>
             <Text style={[styles.progressLabel, styles.progressLabelActive]}>Vehicle</Text>
-            <Text style={styles.progressLabel}>Driver</Text>
+            <Text style={styles.progressLabel}>Officer</Text>
             <Text style={styles.progressLabel}>Payment</Text>
           </View>
         </View>
 
         <Text style={styles.chooseRideTitle}>Choose your ride</Text>
-        <Text style={styles.chooseRideSubtitle}>All drivers are licensed security professionals</Text>
+        <Text style={styles.chooseRideSubtitle}>All Security Officers are SIA licensed professionals</Text>
         
         
         <ScrollView 
@@ -252,7 +252,7 @@ const RideSelectionScreen = ({ navigation, route }) => {
 
         {/* Select Ride Button */}
         <Button
-          title={assessmentCompleted ? "🚗 Continue to Driver Selection" : "🛡️ Complete Assessment to Book"}
+          title={assessmentCompleted ? "Continue to Officer Selection" : "Complete Assessment to Book"}
           onPress={handleSelectRide}
           variant={assessmentCompleted ? "primary" : "outline"}
           size="large"
@@ -269,7 +269,7 @@ const RideSelectionScreen = ({ navigation, route }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#FFFFFF', // Uber's clean white background
   },
   mapSection: {
     height: height * 0.4,
@@ -277,7 +277,7 @@ const styles = {
   },
   mapPlaceholder: {
     flex: 1,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#F5F5F5', // Lighter, cleaner gray like Uber
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -333,13 +333,20 @@ const styles = {
   },
   bottomCard: {
     flex: 1,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingTop: theme.spacing.lg,
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.xl,
-    ...theme.shadows.xl,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 10,
   },
   chooseRideTitle: {
     ...theme.typography.headlineSmall,
@@ -361,20 +368,34 @@ const styles = {
     flexGrow: 1,
   },
   rideCard: {
-    padding: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surface,
-    borderWidth: 2,
-    borderColor: theme.colors.gray200,
-    minHeight: 140,
-    ...theme.shadows.md,
+    padding: 16, // Uber's 16px standard padding
+    marginBottom: 8, // Tighter spacing like Uber
+    borderRadius: 8, // Uber's 8px radius
+    backgroundColor: '#FFFFFF',
+    borderWidth: 0.5, // Subtle border like Uber
+    borderColor: '#E5E7EB',
+    minHeight: 100, // More compact like Uber
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1, // Subtle shadow like Uber
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
   rideCardSelected: {
-    borderColor: theme.colors.primary,
-    backgroundColor: theme.colors.primary + '08',
-    borderWidth: 3,
-    ...theme.shadows.lg,
+    borderColor: '#000000', // Uber's black selection
+    backgroundColor: '#F5F5F5', // Light gray selection like Uber
+    borderWidth: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -383,22 +404,24 @@ const styles = {
     marginBottom: theme.spacing.md,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#F3F4F6',
   },
   badge: {
-    borderRadius: 12,
-    paddingHorizontal: 8,
+    borderRadius: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
+    backgroundColor: '#00C851',
   },
   badgeText: {
     ...theme.typography.labelSmall,
-    color: theme.colors.surface,
-    fontWeight: '700',
-    fontSize: 10,
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 11,
   },
   selectedCheck: {
     position: 'absolute',
@@ -407,9 +430,10 @@ const styles = {
   },
   serviceName: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '700',
+    color: '#1F2937',
+    fontWeight: '600',
     marginBottom: theme.spacing.sm,
+    fontSize: 18,
   },
   featuresContainer: {
     marginBottom: theme.spacing.md,
@@ -448,10 +472,12 @@ const styles = {
     color: theme.colors.textSecondary,
   },
   tripDetails: {
-    backgroundColor: theme.colors.gray50,
+    backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   tripDetailRow: {
     flexDirection: 'row',
@@ -464,11 +490,13 @@ const styles = {
     marginLeft: theme.spacing.sm,
   },
   selectButton: {
-    backgroundColor: theme.colors.text,
+    backgroundColor: '#000000', // Uber's pure black
+    borderRadius: 8, // Uber's radius
+    height: 56,
   },
   selectButtonDisabled: {
-    backgroundColor: theme.colors.gray400,
-    opacity: 0.6,
+    backgroundColor: '#9CA3AF',
+    opacity: 0.7,
   },
   // Progress indicator styles
   progressContainer: {

@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import MapView from '../components/Map/MapView';
+import MapView from '../components/Map';
 import { useBooking } from '../context/BookingContext';
 import theme from '../theme';
 

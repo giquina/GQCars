@@ -77,8 +77,8 @@ const AccountScreen = ({ navigation }) => {
   const menuItems = [
     {
       id: 1,
-      title: 'Trip History',
-      icon: 'receipt-outline',
+      title: 'Security Transport History',
+      icon: 'shield-checkmark-outline',
       rightIcon: 'chevron-forward-outline',
       onPress: () => handleMenuPress('myOrders'),
     },
@@ -91,38 +91,40 @@ const AccountScreen = ({ navigation }) => {
     },
     {
       id: 3,
-      title: 'Invite Friends',
-      icon: 'share-outline',
+      title: 'Emergency Contacts',
+      icon: 'call-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => handleMenuPress('share'),
+      onPress: () => navigation.navigate('EmergencyContacts'),
+      priority: true,
     },
     {
       id: 4,
+      title: 'Security Settings',
+      icon: 'shield-outline',
+      rightIcon: 'chevron-forward-outline',
+      onPress: () => handleMenuPress('settings'),
+      priority: true,
+    },
+    {
+      id: 5,
       title: 'Notifications',
       icon: 'notifications-outline',
       rightIcon: 'chevron-forward-outline',
       onPress: () => handleMenuPress('notifications'),
     },
     {
-      id: 5,
-      title: 'Emergency Contacts',
-      icon: 'people-outline',
-      rightIcon: 'chevron-forward-outline',
-      onPress: () => navigation.navigate('EmergencyContacts'),
-    },
-    {
       id: 6,
-      title: 'Security Settings',
-      icon: 'shield-outline',
+      title: 'Invite Friends',
+      icon: 'share-outline',
       rightIcon: 'chevron-forward-outline',
-      onPress: () => handleMenuPress('settings'),
+      onPress: () => handleMenuPress('share'),
     },
     {
       id: 7,
       title: 'Log out',
       icon: 'log-out-outline',
       rightIcon: null,
-      textColor: theme.colors.error,
+      textColor: '#EF4444',
       onPress: () => handleMenuPress('logout'),
     },
   ];
@@ -209,7 +211,7 @@ const AccountScreen = ({ navigation }) => {
               <Ionicons name="shield-checkmark" size={24} color={theme.colors.primary} />
             </View>
             <Text style={styles.statValue}>{userData.securityRides}</Text>
-            <Text style={styles.statLabel}>Safe Trips</Text>
+            <Text style={styles.statLabel}>Secure Trips</Text>
           </Card>
           
           <Card style={styles.statCard} elevation="sm">
@@ -254,21 +256,28 @@ const AccountScreen = ({ navigation }) => {
             {menuItems.map((item) => (
               <TouchableOpacity
                 key={item.id}
-                style={styles.menuItem}
+                style={[
+                  styles.menuItem,
+                  item.priority && styles.menuItemPriority
+                ]}
                 onPress={item.onPress}
                 activeOpacity={0.7}
               >
                 <View style={styles.menuLeft}>
-                  <View style={styles.menuIcon}>
+                  <View style={[
+                    styles.menuIcon,
+                    item.priority && styles.menuIconPriority
+                  ]}>
                     <Ionicons
                       name={item.icon}
                       size={20}
-                      color={item.textColor || theme.colors.textSecondary}
+                      color={item.priority ? '#00C851' : (item.textColor || '#6B7280')}
                     />
                   </View>
                   <Text style={[
                     styles.menuText,
-                    item.textColor && { color: item.textColor }
+                    item.textColor && { color: item.textColor },
+                    item.priority && styles.menuTextPriority
                   ]}>
                     {item.title}
                   </Text>
@@ -277,16 +286,16 @@ const AccountScreen = ({ navigation }) => {
                   <Ionicons
                     name={item.rightIcon}
                     size={16}
-                    color={theme.colors.textSecondary}
+                    color={item.priority ? '#00C851' : '#6B7280'}
                   />
                 )}
               </TouchableOpacity>
             ))}
           </View>
 
-          {/* My Rides Section */}
+          {/* Security Transport History */}
           <View style={[styles.rightColumn, isTablet && styles.rightColumnTablet]}>
-            <Text style={styles.sectionTitle}>Recent safe trips</Text>
+            <Text style={styles.sectionTitle}>Recent trips</Text>
             {recentRides.map((ride) => (
               <TouchableOpacity
                 key={ride.id}
@@ -302,7 +311,7 @@ const AccountScreen = ({ navigation }) => {
                   <Image source={{ uri: ride.driverPhoto }} style={styles.driverPhoto} />
                   <View style={styles.rideInfo}>
                     <Text style={styles.driverName}>{ride.driverName}</Text>
-                    <Text style={styles.driverTitle}>{ride.driverTitle}</Text>
+                    <Text style={styles.officerTitle}>{ride.driverTitle}</Text>
                     <Text style={styles.rideDate}>{ride.date}</Text>
                   </View>
                   <Text style={styles.ridePrice}>{ride.price}</Text>
@@ -337,7 +346,7 @@ const AccountScreen = ({ navigation }) => {
               activeOpacity={0.7}
               onPress={() => handleMenuPress('myOrders')}
             >
-              <Text style={styles.viewAllText}>View all rides</Text>
+              <Text style={styles.viewAllText}>View all trips</Text>
               <Ionicons name="chevron-forward-outline" size={16} color={theme.colors.primary} />
             </TouchableOpacity>
           </View>
@@ -360,7 +369,7 @@ const AccountScreen = ({ navigation }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#F9FAFB',
   },
   header: {
     flexDirection: 'row',
@@ -368,24 +377,46 @@ const styles = {
     alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.lg,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
   headerTitle: {
     ...theme.typography.headlineLarge,
-    color: theme.colors.text,
-    fontWeight: '700',
+    color: '#1F2937',
+    fontWeight: '800',
+    fontSize: 28,
   },
   headerNotificationBtn: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: theme.colors.gray100,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   profileCard: {
     marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: theme.spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   profileInfo: {
     flexDirection: 'row',
@@ -403,34 +434,37 @@ const styles = {
   },
   profileName: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    color: '#1F2937',
+    fontWeight: '700',
+    fontSize: 20,
   },
   profileEmail: {
     ...theme.typography.bodySmall,
-    color: theme.colors.textSecondary,
+    color: '#6B7280',
     marginTop: 2,
+    fontSize: 14,
   },
   profilePhone: {
     ...theme.typography.bodySmall,
-    color: theme.colors.textSecondary,
+    color: '#6B7280',
     marginTop: 2,
+    fontSize: 14,
   },
   editButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#00C851',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: theme.colors.primary,
+    shadowColor: '#00C851',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -442,30 +476,53 @@ const styles = {
     flex: 1,
     alignItems: 'center',
     paddingVertical: theme.spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   statIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: theme.colors.gray100,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: theme.spacing.sm,
   },
   statValue: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '700',
+    color: '#1F2937',
+    fontWeight: '800',
+    fontSize: 24,
   },
   statLabel: {
     ...theme.typography.labelSmall,
-    color: theme.colors.textSecondary,
+    color: '#6B7280',
     marginTop: 2,
+    fontSize: 12,
+    fontWeight: '500',
   },
   balanceCard: {
     marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
-    backgroundColor: theme.colors.text,
+    backgroundColor: '#1F2937',
+    borderRadius: 16,
+    padding: theme.spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
   },
   balanceHeader: {
     flexDirection: 'row',
@@ -486,10 +543,18 @@ const styles = {
   addMoneyButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#00C851',
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
-    borderRadius: 20,
+    borderRadius: 24,
+    shadowColor: '#00C851',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   addMoneyText: {
     ...theme.typography.labelMedium,
@@ -519,47 +584,61 @@ const styles = {
   },
   sectionTitle: {
     ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    color: '#1F2937',
+    fontWeight: '700',
     marginBottom: theme.spacing.md,
+    fontSize: 20,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: theme.spacing.lg,
-    paddingHorizontal: theme.spacing.sm,
-    marginBottom: theme.spacing.sm,
-    backgroundColor: theme.colors.surface,
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.xs,
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    shadowColor: theme.colors.shadow,
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
     shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   menuLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   menuIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.colors.gray50,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: theme.spacing.md,
   },
   menuText: {
     ...theme.typography.bodyMedium,
-    color: theme.colors.text,
+    color: '#1F2937',
+    fontSize: 16,
+    fontWeight: '500',
   },
   rideCard: {
     marginBottom: theme.spacing.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: theme.spacing.md,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   rideHeader: {
     flexDirection: 'row',
@@ -578,23 +657,28 @@ const styles = {
   },
   driverName: {
     ...theme.typography.titleSmall,
-    color: theme.colors.text,
-    fontWeight: '500',
+    color: '#1F2937',
+    fontWeight: '600',
+    fontSize: 16,
   },
-  driverTitle: {
+  officerTitle: {
     ...theme.typography.labelSmall,
-    color: theme.colors.primary,
+    color: '#00C851',
     marginTop: 1,
+    fontSize: 12,
+    fontWeight: '600',
   },
   rideDate: {
     ...theme.typography.labelSmall,
-    color: theme.colors.textSecondary,
+    color: '#6B7280',
     marginTop: 2,
+    fontSize: 12,
   },
   ridePrice: {
     ...theme.typography.titleSmall,
-    color: theme.colors.text,
-    fontWeight: '600',
+    color: '#1F2937',
+    fontWeight: '700',
+    fontSize: 16,
   },
   rideRoute: {
     marginBottom: theme.spacing.sm,
@@ -616,12 +700,14 @@ const styles = {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#00C851',
     marginRight: theme.spacing.xs,
   },
   statusText: {
     ...theme.typography.labelSmall,
-    color: theme.colors.primary,
+    color: '#00C851',
+    fontSize: 12,
+    fontWeight: '600',
   },
   rideRating: {
     flexDirection: 'row',
@@ -635,8 +721,21 @@ const styles = {
   },
   viewAllText: {
     ...theme.typography.labelMedium,
-    color: theme.colors.primary,
+    color: '#00C851',
     marginRight: 4,
+    fontWeight: '600',
+  },
+  menuItemPriority: {
+    borderWidth: 1,
+    borderColor: '#00C851' + '20',
+    backgroundColor: '#00C851' + '05',
+  },
+  menuIconPriority: {
+    backgroundColor: '#00C851' + '10',
+  },
+  menuTextPriority: {
+    color: '#00C851',
+    fontWeight: '600',
   },
 };
 

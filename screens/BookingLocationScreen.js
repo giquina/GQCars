@@ -14,7 +14,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import EmergencyButton from '../components/ui/EmergencyButton';
-import MapView from '../components/Map/MapView';
+import GQMapView from '../components/Map';
 import LocationService from '../services/LocationService';
 import bookingService from '../services/BookingService';
 import theme from '../theme';
@@ -222,7 +222,7 @@ const BookingLocationScreen = ({ navigation, route }) => {
         {/* Map Preview */}
         <View style={styles.mapContainer}>
           {currentLocation && (
-            <MapView
+            <GQMapView
               style={styles.map}
               initialRegion={{
                 latitude: currentLocation.latitude,

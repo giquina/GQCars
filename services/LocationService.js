@@ -1,4 +1,10 @@
-import * as Location from 'expo-location';
+import { Platform } from 'react-native';
+
+// Platform-specific location imports
+let Location;
+if (Platform.OS !== 'web') {
+  Location = require('expo-location');
+}
 
 class LocationService {
   static instance = null;
@@ -21,6 +27,16 @@ class LocationService {
 
   async requestPermissions() {
     try {
+      if (Platform.OS === 'web') {
+        // Web uses browser geolocation API
+        return new Promise((resolve) => {
+          if (navigator.geolocation) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      }
       const { status } = await Location.requestForegroundPermissionsAsync();
       return status === 'granted';
     } catch (error) {
@@ -34,6 +50,31 @@ class LocationService {
       const hasPermission = await this.requestPermissions();
       if (!hasPermission) {
         throw new Error('Location permission denied');
+      }
+
+      if (Platform.OS === 'web') {
+        // Use browser geolocation API
+        return new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              this.currentLocation = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              };
+              resolve(this.currentLocation);
+            },
+            (error) => {
+              console.error('Web geolocation error:', error);
+              // Fallback to London coordinates
+              this.currentLocation = {
+                latitude: 51.5074,
+                longitude: -0.1278,
+              };
+              resolve(this.currentLocation);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+          );
+        });
       }
 
       const location = await Location.getCurrentPositionAsync({
@@ -55,6 +96,11 @@ class LocationService {
 
   async reverseGeocode(latitude, longitude) {
     try {
+      if (Platform.OS === 'web') {
+        // Mock reverse geocoding for web
+        return `Location near ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+      }
+      
       const result = await Location.reverseGeocodeAsync({
         latitude,
         longitude,
@@ -76,6 +122,14 @@ class LocationService {
 
   async geocode(address) {
     try {
+      if (Platform.OS === 'web') {
+        // Mock geocoding for web - return London coordinates
+        return {
+          latitude: 51.5074,
+          longitude: -0.1278,
+        };
+      }
+      
       const result = await Location.geocodeAsync(address);
       if (result && result.length > 0) {
         return {
@@ -102,6 +156,11 @@ class LocationService {
   }
 
   startWatchingLocation(callback, options = {}) {
+    if (Platform.OS === 'web') {
+      // Web doesn't support watch location
+      return;
+    }
+    
     this.stopWatchingLocation();
     
     Location.watchPositionAsync(
@@ -124,7 +183,7 @@ class LocationService {
   }
 
   stopWatchingLocation() {
-    if (this.watchId) {
+    if (this.watchId && Platform.OS !== 'web') {
       this.watchId.remove();
       this.watchId = null;
     }

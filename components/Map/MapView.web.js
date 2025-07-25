@@ -42,8 +42,8 @@ const GQMapView = ({
   }, []);
 
   const handleMapClick = (event) => {
-    if (onLocationSelect && event.nativeEvent) {
-      // Mock coordinate selection for web
+    if (onLocationSelect) {
+      // Mock coordinate selection for web (works with both touch and click events)
       onLocationSelect({
         latitude: 51.5074 + (Math.random() - 0.5) * 0.01,
         longitude: -0.1278 + (Math.random() - 0.5) * 0.01,
@@ -53,7 +53,7 @@ const GQMapView = ({
 
   return (
     <View style={[styles.container, style]}>
-      <View style={styles.mapPlaceholder} onTouchEnd={handleMapClick}>
+      <View style={styles.mapPlaceholder} onTouchEnd={handleMapClick} onClick={handleMapClick}>
         <Text style={styles.mapText}>Interactive Map</Text>
         <Text style={styles.mapSubtext}>
           {pickupLocation ? '📍 Pickup Location Set' : 'Tap to set pickup location'}
