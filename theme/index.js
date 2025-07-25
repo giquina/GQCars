@@ -1,20 +1,21 @@
 const colors = {
-  // Professional blue primary theme (like Uber/Lyft)
-  primary: '#007AFF', // Professional blue
-  primaryDark: '#005BB5',
-  primaryLight: '#4DA2FF',
+  // ARMORA BRANDING - Midnight Navy & Royal Cyan
+  primary: '#0A1F3D', // Midnight Navy
+  primaryDark: '#081729',
+  primaryLight: '#0D2851',
   
-  // Secondary colors
-  secondary: '#FF6B35', // Orange accent
-  secondaryLight: '#FF8A5C',
+  // Secondary colors - Royal Cyan accent
+  secondary: '#0FD3E3', // Royal Cyan
+  secondaryLight: '#3FDCE9',
+  secondaryDark: '#0CB8C6',
   
-  // Neutral colors
-  background: '#FFFFFF',
+  // Neutral colors - Arctic Grey base
+  background: '#F4F6F8', // Arctic Grey
   surface: '#FFFFFF',
   card: '#FFFFFF',
   
-  // Text colors
-  text: '#1A1A1A',
+  // Text colors - Charcoal
+  text: '#222222', // Charcoal
   textSecondary: '#666666',
   textLight: '#999999',
   
@@ -30,7 +31,7 @@ const colors = {
   gray800: '#424242',
   gray900: '#212121',
   
-  // Status colors - Enhanced for better accessibility
+  // Status colors - Armora themed
   success: '#10B981',
   successLight: '#34D399',
   successDark: '#059669',
@@ -40,9 +41,13 @@ const colors = {
   error: '#EF4444',
   errorLight: '#F87171',
   errorDark: '#DC2626',
-  info: '#3B82F6',
-  infoLight: '#60A5FA',
-  infoDark: '#2563EB',
+  info: '#0FD3E3', // Royal Cyan for info
+  infoLight: '#3FDCE9',
+  infoDark: '#0CB8C6',
+  
+  // Armora brand gradient colors
+  gradientStart: '#0A1F3D', // Midnight Navy
+  gradientEnd: '#0FD3E3',   // Royal Cyan
 
   // Emergency colors - More prominent
   emergency: '#DC2626',
@@ -53,9 +58,9 @@ const colors = {
   // Shadows
   shadow: '#000000',
   
-  // Map/Location
-  mapPrimary: '#FFB800',
-  mapSecondary: '#FF6B35',
+  // Map/Location - Armora themed
+  mapPrimary: '#0FD3E3', // Royal Cyan
+  mapSecondary: '#0A1F3D', // Midnight Navy
   
   // Special states
   disabled: '#F5F5F5',
@@ -63,10 +68,11 @@ const colors = {
   border: '#E0E0E0',
   divider: '#EEEEEE',
   
-  // Dark theme (optional)
-  backgroundDark: '#121212',
-  surfaceDark: '#1E1E1E',
+  // Dark theme - Armora branded
+  backgroundDark: '#0A1F3D', // Midnight Navy background
+  surfaceDark: '#0D2851', // Lighter navy for cards
   textDark: '#FFFFFF',
+  cardDark: '#081729', // Darker navy for elevated cards
 };
 
 const typography = {
@@ -228,16 +234,51 @@ const theme = {
   borderRadius,
   shadows,
   
-  // Navigation theme for React Navigation
+  // Navigation theme for React Navigation - Armora Branded
   navigation: {
     dark: false,
     colors: {
-      primary: colors.primary,
-      background: colors.background,
-      card: colors.surface,
-      text: colors.text,
+      primary: colors.primary, // Midnight Navy
+      background: colors.background, // Arctic Grey
+      card: colors.surface, // White
+      text: colors.text, // Charcoal
       border: colors.border,
-      notification: colors.secondary,
+      notification: colors.secondary, // Royal Cyan
+    },
+    fonts: {
+      regular: {
+        fontFamily: 'System',
+        fontWeight: 'normal',
+      },
+      medium: {
+        fontFamily: 'System',
+        fontWeight: '500',
+      },
+      light: {
+        fontFamily: 'System',
+        fontWeight: '300',
+      },
+      thin: {
+        fontFamily: 'System',
+        fontWeight: '100',
+      },
+      bold: {
+        fontFamily: 'System',
+        fontWeight: 'bold',
+      },
+    },
+  },
+  
+  // Dark Navigation theme for React Navigation - Armora Branded
+  navigationDark: {
+    dark: true,
+    colors: {
+      primary: colors.secondary, // Royal Cyan
+      background: colors.backgroundDark, // Midnight Navy
+      card: colors.surfaceDark, // Lighter Navy
+      text: colors.textDark, // White
+      border: colors.primary, // Midnight Navy
+      notification: colors.secondary, // Royal Cyan
     },
     fonts: {
       regular: {

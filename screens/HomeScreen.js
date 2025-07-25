@@ -75,7 +75,7 @@ const HomeScreen = ({ navigation }) => {
   
   // Bottom sheet with 2 snap positions (COLLAPSED and HALF only)
   const SNAP_POINTS = {
-    COLLAPSED: 140,  // Show quick actions peek
+    COLLAPSED: 200,  // Show text and drag handle above Request Armora button
     HALF: height * 0.55, // Slightly more than half to show good content without accessibility issues
   };
   
@@ -97,62 +97,60 @@ const HomeScreen = ({ navigation }) => {
   const [assessmentCompleted, setAssessmentCompleted] = useState(false);
   const locationService = LocationService.getInstance();
 
-  const quickActions = [
+  const popularDestinations = [
     {
-      id: 'schedule',
-      title: 'Schedule',
-      icon: 'time-outline',
-      color: '#FF6B35',
-      description: 'Book for later'
-    },
-    {
-      id: 'security',
-      title: 'Security',
-      icon: 'shield-checkmark-outline',
-      color: '#00C851',
-      description: 'Enhanced protection'
-    },
-    {
-      id: 'airport',
-      title: 'Airport',
-      icon: 'airplane-outline',
+      id: 'heathrow-airport',
+      title: 'Heathrow',
+      icon: 'airplane',
       color: '#2196F3',
-      description: 'Flight tracking'
+      description: 'All terminals',
+      address: 'Heathrow Airport, London',
+      popular: true
     },
     {
-      id: 'events',
-      title: 'Events',
-      icon: 'calendar-outline',
-      color: '#9C27B0',
-      description: 'Special occasions'
-    },
-    {
-      id: 'executive',
-      title: 'Executive',
-      icon: 'business-outline',
+      id: 'canary-wharf',
+      title: 'Canary Wharf',
+      icon: 'business',
       color: '#FF9800',
-      description: 'Business transport'
+      description: 'Financial district',
+      address: 'Canary Wharf, London E14',
+      popular: true
     },
     {
-      id: 'emergency',
-      title: 'Emergency',
-      icon: 'alert-circle-outline',
-      color: '#F44336',
-      description: 'Immediate pickup'
+      id: 'westminster',
+      title: 'Westminster',
+      icon: 'library',
+      color: '#9C27B0',
+      description: 'Government area',
+      address: 'Westminster, London SW1A',
+      popular: true
     },
     {
-      id: 'multi-stop',
-      title: 'Multi-Stop',
-      icon: 'location-outline',
-      color: '#795548',
-      description: 'Multiple destinations'
+      id: 'city-london',
+      title: 'City of London',
+      icon: 'storefront',
+      color: '#4CAF50',
+      description: 'Business centre',
+      address: 'City of London, EC2',
+      popular: true
     },
     {
-      id: 'hourly',
-      title: 'Hourly',
-      icon: 'timer-outline',
-      color: '#607D8B',
-      description: 'By the hour'
+      id: 'gatwick-airport',
+      title: 'Gatwick',
+      icon: 'airplane',
+      color: '#2196F3',
+      description: 'South terminal',
+      address: 'Gatwick Airport, Surrey',
+      popular: true
+    },
+    {
+      id: 'mayfair',
+      title: 'Mayfair',
+      icon: 'diamond',
+      color: '#E91E63',
+      description: 'Luxury district',
+      address: 'Mayfair, London W1',
+      popular: true
     }
   ];
 
@@ -161,13 +159,57 @@ const HomeScreen = ({ navigation }) => {
       id: 'security-hire',
       name: 'Personal Security Driver',
       basePrice: 50.00,
-      description: 'SIA-licensed drivers with TFL vehicles',
+      description: 'Standard transport with SIA-licensed close protection officers',
       color: '#4CAF50',
       icon: 'shield-checkmark',
       badge: 'Available Now',
       badgeColor: '#4CAF50',
       active: true,
-      minimumFare: 50.00
+      minimumFare: 50.00,
+      features: ['SIA Licensed', 'Background Checked', 'Standard Vehicles'],
+      popular: true
+    },
+    {
+      id: 'executive-protection',
+      name: 'Executive Protection',
+      basePrice: 75.00,
+      description: 'Enhanced security for high-profile individuals and executives',
+      color: '#FF9800',
+      icon: 'business-outline',
+      badge: 'Coming Soon',
+      badgeColor: '#FF9800',
+      active: false,
+      minimumFare: 75.00,
+      features: ['Advanced Training', 'Discreet Service', 'Luxury Vehicles'],
+      popular: false
+    },
+    {
+      id: 'event-security',
+      name: 'Event Security Transport',
+      basePrice: 60.00,
+      description: 'Specialized transport for events, galas, and special occasions',
+      color: '#9C27B0',
+      icon: 'calendar-outline',
+      badge: 'Coming Soon',
+      badgeColor: '#9C27B0',
+      active: false,
+      minimumFare: 60.00,
+      features: ['Event Specialist', 'Coordinated Service', 'Flexible Timing'],
+      popular: false
+    },
+    {
+      id: 'airport-security',
+      name: 'Airport Security Transfer',
+      basePrice: 55.00,
+      description: 'Secure airport transfers with flight tracking and meet & greet',
+      color: '#2196F3',
+      icon: 'airplane-outline',
+      badge: 'Coming Soon',
+      badgeColor: '#2196F3',
+      active: false,
+      minimumFare: 55.00,
+      features: ['Flight Tracking', 'Meet & Greet', 'Baggage Assistance'],
+      popular: false
     }
   ];
 
@@ -180,17 +222,45 @@ const HomeScreen = ({ navigation }) => {
     return `£${calculatedPrice.toFixed(2)}`;
   };
 
+  // Enhanced filtering and suggestions logic
   const filteredSuggestions = (() => {
     const query = currentInputField === 'pickup' ? pickupAddress : destinationAddress;
-    if (query) {
-      return locationSuggestions.filter(
+    
+    // If there's a search query, filter existing suggestions
+    if (query && query.length > 0) {
+      const filtered = locationSuggestions.filter(
         location =>
           location.title.toLowerCase().includes(query.toLowerCase()) ||
           location.address.toLowerCase().includes(query.toLowerCase())
       );
+      
+      // If we have matches, show them, otherwise show popular destinations
+      return filtered.length > 0 ? filtered : popularDestinations.slice(0, 4).map(dest => ({
+        id: dest.id,
+        title: dest.title,
+        address: dest.address,
+        distance: 'Popular destination'
+      }));
     }
-    return locationSuggestions;
+    
+    // When no query, show recent places (using locationSuggestions as mock recent places)
+    // In a real app, this would come from stored user data
+    return locationSuggestions.slice(0, 4);
   })();
+
+  // Get suggestion header text based on content
+  const getSuggestionHeaderText = () => {
+    const query = currentInputField === 'pickup' ? pickupAddress : destinationAddress;
+    if (query && query.length > 0) {
+      const hasMatches = locationSuggestions.some(
+        location =>
+          location.title.toLowerCase().includes(query.toLowerCase()) ||
+          location.address.toLowerCase().includes(query.toLowerCase())
+      );
+      return hasMatches ? 'Search results' : 'Popular destinations';
+    }
+    return 'Recent destinations';
+  };
 
   const handleLocationSelect = (location) => {
     setDestinationCoords({ latitude: 40.7589, longitude: -73.9851 }); // Mock coordinates
@@ -260,10 +330,18 @@ const HomeScreen = ({ navigation }) => {
       setDestinationAddress(location.title);
       setDestinationCoords({ latitude: 40.7589, longitude: -73.9851 }); // Mock coordinates
     }
+    
+    // Clear focus and hide suggestions
     setShowLocationSuggestions(false);
     setCurrentInputField(null);
     setPickupFocused(false);
     setDestinationFocused(false);
+    
+    // Dismiss keyboard
+    Keyboard.dismiss();
+    
+    // Animate feedback
+    animateLocationCard();
   };
 
   // Close suggestions when user interacts with bottom sheet
@@ -290,47 +368,23 @@ const HomeScreen = ({ navigation }) => {
     ]).start();
   };
 
-  // Handle quick action selection
-  const handleQuickActionPress = (action) => {
-    setSelectedQuickAction(action.id);
+  // Handle popular destination selection
+  const handlePopularDestinationPress = (destination) => {
+    setSelectedQuickAction(destination.id);
     
-    switch (action.id) {
-      case 'schedule':
-        setShowScheduleModal(true);
-        break;
-      case 'security':
-        setShowSecurityModal(true);
-        break;
-      case 'airport':
-        setShowAirportModal(true);
-        break;
-      case 'events':
-        // Set destination to common event venues
-        setCurrentInputField('destination');
-        setShowLocationSuggestions(true);
-        break;
-      case 'executive':
-        // Pre-select executive service
-        setSelectedService('executive');
-        break;
-      case 'emergency':
-        // Immediate booking flow
-        Alert.alert('Emergency Transport', 'Connecting you to immediate security transport...', [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Continue', onPress: () => navigation.navigate('RideSelection', { isEmergency: true }) }
-        ]);
-        break;
-      case 'multi-stop':
-        // Multi-destination booking
-        Alert.alert('Multi-Stop Journey', 'Feature coming soon - plan multiple destinations with security transport.');
-        break;
-      case 'hourly':
-        // Hourly booking
-        Alert.alert('Hourly Security Transport', 'Book security-trained drivers by the hour. Feature coming soon.');
-        break;
-      default:
-        break;
-    }
+    // Set the destination
+    setDestinationAddress(destination.title);
+    setDestinationCoords({ latitude: 51.4700, longitude: -0.4543 }); // Mock coordinates
+    
+    // Animate the location card to show feedback
+    animateLocationCard();
+    
+    // Show a brief confirmation
+    Alert.alert(
+      'Destination Selected', 
+      `Set destination to ${destination.title}. Choose your service below to continue.`,
+      [{ text: 'Got it', style: 'default' }]
+    );
   };
 
   // Bottom sheet snap functions (2 positions only)
@@ -364,27 +418,39 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  // Pulsing animation for expand prompt
+  // Enhanced pulsing and bounce animation for expand prompt
   const startExpandPromptAnimation = () => {
-    const pulse = () => {
+    const bounceAndPulse = () => {
       Animated.sequence([
+        // Bounce animation
+        Animated.timing(locationCardScale, {
+          toValue: 1.03,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(locationCardScale, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        // Pulse animation
         Animated.timing(expandPromptOpacity, {
-          toValue: 0.6,
-          duration: 1000,
+          toValue: 0.5,
+          duration: 800,
           useNativeDriver: true,
         }),
         Animated.timing(expandPromptOpacity, {
           toValue: 1,
-          duration: 1000,
+          duration: 800,
           useNativeDriver: true,
         })
       ]).start(() => {
         if (currentSnapPoint === 'COLLAPSED') {
-          pulse();
+          setTimeout(bounceAndPulse, 2000); // Wait 2 seconds before next cycle
         }
       });
     };
-    pulse();
+    setTimeout(bounceAndPulse, 1000); // Start after 1 second
   };
 
   const stopExpandPromptAnimation = () => {
@@ -477,7 +543,7 @@ const HomeScreen = ({ navigation }) => {
 
   // Uber-style simple button text
   const getBookingButtonText = () => {
-    return 'Request GQCars';
+    return 'Request Armora';
   };
 
   useEffect(() => {
@@ -527,7 +593,7 @@ const HomeScreen = ({ navigation }) => {
           <Ionicons name="menu" size={24} color="#000000" />
         </TouchableOpacity>
         <View style={styles.uberBrandSection}>
-          <Text style={styles.uberBrandText}>GQCars</Text>
+          <Text style={styles.uberBrandText}>Armora</Text>
           <Text style={styles.uberSecurityBadge}>Security Licensed</Text>
         </View>
         <TouchableOpacity 
@@ -581,6 +647,7 @@ const HomeScreen = ({ navigation }) => {
             onPress={() => {
               animateLocationCard();
               setCurrentInputField('destination');
+              setDestinationFocused(true);
               setShowLocationSuggestions(true);
             }}
           >
@@ -589,9 +656,36 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <View style={styles.locationInputContent}>
               <Text style={styles.locationInputLabel}>Where to?</Text>
-              <Text style={[styles.locationInputValue, !destinationAddress && styles.locationInputPlaceholder]}>
-                {destinationAddress || 'Choose destination'}
-              </Text>
+              {destinationFocused ? (
+                <TextInput
+                  style={styles.locationTextInput}
+                  value={destinationAddress}
+                  onChangeText={(text) => {
+                    setDestinationAddress(text);
+                    setShowLocationSuggestions(true);
+                  }}
+                  onFocus={() => {
+                    setCurrentInputField('destination');
+                    setDestinationFocused(true);
+                    setShowLocationSuggestions(true);
+                  }}
+                  onBlur={() => {
+                    setDestinationFocused(false);
+                    if (!destinationAddress) {
+                      setShowLocationSuggestions(false);
+                    }
+                  }}
+                  placeholder="Choose destination"
+                  placeholderTextColor="#999999"
+                  autoFocus={true}
+                  returnKeyType="search"
+                  clearButtonMode="while-editing"
+                />
+              ) : (
+                <Text style={[styles.locationInputValue, !destinationAddress && styles.locationInputPlaceholder]}>
+                  {destinationAddress || 'Choose destination'}
+                </Text>
+              )}
             </View>
             <View style={styles.uberSecurityIndicator}>
               <Ionicons name="shield-checkmark" size={16} color="#00AA00" />
@@ -606,21 +700,30 @@ const HomeScreen = ({ navigation }) => {
           )}
         </Animated.View>
 
-        {/* Recent Destinations - Now part of location section */}
+        {/* Enhanced Location Suggestions Dropdown */}
         {showLocationSuggestions && (
           <View style={styles.locationSuggestionsCard}>
             <View style={styles.suggestionsHeader}>
-              <Ionicons name="time-outline" size={16} color="#666666" />
-              <Text style={styles.suggestionsHeaderText}>Recent destinations</Text>
+              <Ionicons 
+                name={getSuggestionHeaderText().includes('Recent') ? 'time-outline' : 
+                      getSuggestionHeaderText().includes('Popular') ? 'star-outline' : 'search-outline'} 
+                size={16} 
+                color="#666666" 
+              />
+              <Text style={styles.suggestionsHeaderText}>{getSuggestionHeaderText()}</Text>
             </View>
-            {locationSuggestions.slice(0, 4).map((suggestion) => (
+            {filteredSuggestions.map((suggestion) => (
               <TouchableOpacity 
                 key={suggestion.id} 
                 style={styles.suggestionItem}
                 onPress={() => handleSuggestionSelect(suggestion)}
               >
                 <View style={styles.suggestionIcon}>
-                  <Ionicons name="location-outline" size={16} color="#666666" />
+                  <Ionicons 
+                    name={suggestion.distance === 'Popular destination' ? 'star' : 'location-outline'} 
+                    size={16} 
+                    color={suggestion.distance === 'Popular destination' ? '#FFD700' : '#666666'} 
+                  />
                 </View>
                 <View style={styles.suggestionContent}>
                   <Text style={styles.suggestionTitle}>{suggestion.title}</Text>
@@ -629,6 +732,15 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.suggestionDistance}>{suggestion.distance}</Text>
               </TouchableOpacity>
             ))}
+            
+            {/* Show "no results" when filtering returns nothing */}
+            {filteredSuggestions.length === 0 && (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-outline" size={24} color="#CCCCCC" />
+                <Text style={styles.noResultsText}>No locations found</Text>
+                <Text style={styles.noResultsSubtext}>Try a different search term</Text>
+              </View>
+            )}
           </View>
         )}
       </View>
@@ -654,8 +766,9 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity 
           style={styles.currentLocationButton}
           onPress={handleUseCurrentLocation}
+          activeOpacity={0.8}
         >
-          <Ionicons name="locate" size={24} color={theme.colors.surface} />
+          <Ionicons name="locate" size={24} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
 
@@ -664,7 +777,7 @@ const HomeScreen = ({ navigation }) => {
         style={[styles.bottomSheet, { height: bottomSheetHeight }]}
         onTouchStart={handleBottomSheetInteraction}
       >
-        {/* Drag Handle with Pan Gesture - Tap to expand when collapsed */}
+        {/* Redesigned Drag Handle with Rounded Pill */}
         <TouchableOpacity 
           style={[
             styles.dragHandle,
@@ -683,21 +796,15 @@ const HomeScreen = ({ navigation }) => {
               onPress={handleDragHandleTap}
               activeOpacity={0.7}
             >
+            {/* Rounded Handle (Pill Shape) */}
             <View style={[
               styles.dragIndicator,
               currentSnapPoint === 'HALF' && styles.dragIndicatorActive
             ]} />
-            {currentSnapPoint === 'COLLAPSED' ? (
-              <Animated.View style={[styles.expandPrompt, { opacity: expandPromptOpacity }]}>
-                <Ionicons name="chevron-up" size={16} color="#00C851" />
-                <Text style={styles.expandText}>Tap to view services</Text>
-                <Ionicons name="chevron-up" size={16} color="#00C851" />
-              </Animated.View>
-            ) : (
-              <Text style={styles.snapPositionText}>
-                Drag to minimize
-              </Text>
-            )}
+            {/* Always visible state text */}
+            <Text style={styles.snapPositionText}>
+              {currentSnapPoint === 'COLLAPSED' ? 'Slide up to open' : 'Choose your service'}
+            </Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -712,86 +819,165 @@ const HomeScreen = ({ navigation }) => {
           decelerationRate="normal"
           scrollEventThrottle={16}
         >
-          {/* Horizontally Scrollable Quick Actions */}
-          <View style={styles.quickActionsContainer}>
+          {/* Popular Destinations */}
+          <View style={styles.popularDestinationsContainer}>
+            <Text style={styles.popularDestinationsTitle}>Popular Destinations</Text>
             <ScrollView 
               horizontal
               showsHorizontalScrollIndicator={false}
-              style={styles.quickActionsScroll}
-              contentContainerStyle={styles.quickActionsContent}
+              style={styles.popularDestinationsScroll}
+              contentContainerStyle={styles.popularDestinationsContent}
               decelerationRate="fast"
-              snapToInterval={100}
+              snapToInterval={110}
               snapToAlignment="start"
             >
-              {quickActions.map((action) => (
+              {popularDestinations.map((destination) => (
                 <TouchableOpacity 
-                  key={action.id}
+                  key={destination.id}
                   style={[
-                    styles.quickActionItem,
-                    selectedQuickAction === action.id && styles.quickActionItemSelected
+                    styles.popularDestinationItem,
+                    selectedQuickAction === destination.id && styles.popularDestinationItemSelected
                   ]}
-                  onPress={() => handleQuickActionPress(action)}
+                  onPress={() => handlePopularDestinationPress(destination)}
                   activeOpacity={0.7}
                 >
                   <View style={[
-                    styles.quickActionIcon,
-                    { backgroundColor: action.color + '15' }
+                    styles.popularDestinationIcon,
+                    { backgroundColor: destination.color + '15' }
                   ]}>
-                    <Ionicons name={action.icon} size={22} color={action.color} />
+                    <Ionicons name={destination.icon} size={18} color={destination.color} />
                   </View>
-                  <Text style={styles.quickActionText}>{action.title}</Text>
-                  <Text style={styles.quickActionDescription}>{action.description}</Text>
+                  <Text style={styles.popularDestinationText}>{destination.title}</Text>
+                  <Text style={styles.popularDestinationDescription}>{destination.description}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
 
-          {/* Service Options - 2 per row for better space utilization */}
+          {/* Service Options - Single Full-Width Cards */}
           <View style={styles.servicesSection}>
-            <View style={styles.servicesGrid}>
+            <Text style={styles.servicesTitle}>Choose Your Service</Text>
+            <View style={styles.servicesList}>
               {services.map((service) => (
                 <TouchableOpacity 
                   key={service.id} 
                   style={[
-                    styles.serviceCardCompact,
-                    selectedService === service.id && styles.serviceCardSelected
+                    styles.serviceCardFullWidth,
+                    selectedService === service.id && service.active && styles.serviceCardFullWidthSelected,
+                    !service.active && styles.serviceCardDisabled
                   ]}
-                  onPress={() => setSelectedService(service.id)}
+                  onPress={() => {
+                    if (service.active) {
+                      setSelectedService(service.id);
+                    } else {
+                      Alert.alert(
+                        'Coming Soon', 
+                        `${service.name} will be available soon! We're working hard to bring you this premium service.`,
+                        [{ text: 'Got it', style: 'default' }]
+                      );
+                    }
+                  }}
+                  activeOpacity={service.active ? 0.7 : 0.9}
                 >
-                  {/* Badge - positioned absolutely in top right */}
-                  {service.badge && (
-                    <View style={[styles.serviceBadgeCompact, { backgroundColor: service.badgeColor }]}>
-                      <Text style={styles.serviceBadgeTextCompact}>{service.badge}</Text>
+                  {/* Service Info */}
+                  <View style={styles.serviceInfoFull}>
+                    <View style={styles.serviceHeaderFull}>
+                      <Text 
+                        style={[
+                          styles.serviceNameFull, 
+                          !service.active && styles.serviceTextDisabled
+                        ]}
+                        numberOfLines={2}
+                        ellipsizeMode="tail"
+                      >
+                        {service.name}
+                      </Text>
+                      <View style={[
+                        styles.serviceBadgeFull, 
+                        { backgroundColor: service.active ? service.badgeColor : '#CCCCCC' }
+                      ]}>
+                        <Text style={styles.serviceBadgeTextFull}>{service.badge}</Text>
+                      </View>
                     </View>
-                  )}
-                  
-                  {/* Icon - centered at top */}
-                  <View style={[styles.serviceIconContainerCompact, { backgroundColor: service.color + '15' }]}>
-                    <Ionicons name={service.icon} size={22} color={service.color} />
+                    
+                    <Text style={[
+                      styles.serviceDescriptionFull,
+                      !service.active && styles.serviceTextDisabled
+                    ]}>
+                      {service.description}
+                    </Text>
+                    
+                    {/* Service Features */}
+                    <View style={styles.serviceFeaturesContainer}>
+                      {service.features.map((feature, index) => (
+                        <View key={index} style={[
+                          styles.serviceFeature,
+                          !service.active && styles.serviceFeatureDisabled
+                        ]}>
+                          <Ionicons 
+                            name="checkmark-circle" 
+                            size={12} 
+                            color={service.active ? service.color : '#CCCCCC'} 
+                          />
+                          <Text style={[
+                            styles.serviceFeatureText,
+                            !service.active && styles.serviceTextDisabled
+                          ]}>
+                            {feature}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                    
+                    <View style={styles.serviceMetaFull}>
+                      <Text style={[
+                        styles.servicePriceFull,
+                        !service.active && styles.serviceTextDisabled
+                      ]}>
+                        From £{service.basePrice.toFixed(2)}
+                      </Text>
+                      <View style={styles.serviceTrustTagsFull}>
+                        {service.popular && (
+                          <View style={[styles.trustTag, !service.active && styles.tagDisabled]}>
+                            <Text style={[styles.trustTagText, !service.active && styles.tagTextDisabled]}>
+                              Most Popular
+                            </Text>
+                          </View>
+                        )}
+                        {service.active && (
+                          <View style={styles.certifiedTag}>
+                            <Text style={styles.certifiedTagText}>Available</Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
                   </View>
                   
-                  {/* Title */}
-                  <Text style={styles.serviceNameCompact} numberOfLines={1} ellipsizeMode="tail">
-                    {service.name}
-                  </Text>
-                  
-                  {/* Price */}
-                  <Text style={styles.servicePriceCompact}>
-                    Minimum £{service.minimumFare || service.basePrice}
-                  </Text>
-                  
-                  {/* Description - bottom */}
-                  <Text style={styles.serviceDescriptionCompact} numberOfLines={2} ellipsizeMode="tail">
-                    {service.description}
-                  </Text>
+                    {/* Selection Indicator or Coming Soon Badge */}
+                    <View style={styles.selectionIndicatorContainer}>
+                      {service.active ? (
+                        <View style={[
+                          styles.selectionIndicator,
+                          selectedService === service.id && styles.selectionIndicatorSelected
+                        ]}>
+                          {selectedService === service.id && (
+                            <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                          )}
+                        </View>
+                      ) : (
+                        <View style={styles.comingSoonIndicator}>
+                          <Ionicons name="time-outline" size={16} color="#CCCCCC" />
+                        </View>
+                      )}
+                    </View>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
 
-          {/* GQCars Brand Section - Moved below services */}
+          {/* Armora Brand Section - Moved below services */}
           <View style={styles.brandSection}>
-            <Text style={styles.brandTitle}>GQCars - Private Hire with Security Professionals</Text>
+            <Text style={styles.brandTitle}>Armora - Private Hire with Security Professionals</Text>
             <Text style={styles.brandSubtitle}>TFL-approved minicab service across South East England • All drivers are SIA-licensed close protection officers</Text>
           </View>
 
@@ -801,47 +987,59 @@ const HomeScreen = ({ navigation }) => {
       </Animated.View>
 
 
-      {/* Fixed Bottom Request Button - Always at Bottom */}
+      {/* Fixed Bottom CTA Buttons - 70/30 Split */}
       <View style={styles.fixedBottomButtonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.floatingBookButton,
-            styles.floatingBookButtonActive  // Always show active/premium state
-          ]}
-          activeOpacity={0.92}
-          onPress={async () => {
-            if (!selectedService) {
-              Alert.alert('Select Service', 'Please choose a service type first.');
-            } else if (!pickupCoords || !destinationCoords) {
-              Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
-            } else {
-              try {
-                // Start booking with BookingService
-                const serviceData = services.find(s => s.id === selectedService);
-                await bookingService.startBooking({
-                  pickupLocation: { coords: pickupCoords, address: pickupAddress },
-                  destinationLocation: { coords: destinationCoords, address: destinationAddress },
-                  selectedService: serviceData
-                });
+        <View style={styles.ctaButtonRow}>
+          {/* Primary Request Button - 70% width */}
+          <TouchableOpacity
+            style={[
+              styles.primaryBookButton,
+              styles.floatingBookButtonActive
+            ]}
+            activeOpacity={0.85}
+            onPress={async () => {
+              if (!selectedService) {
+                Alert.alert('Select Service', 'Please choose a service type first.');
+              } else if (!pickupCoords || !destinationCoords) {
+                Alert.alert('Set Locations', 'Please set both pickup and drop-off locations.');
+              } else {
+                try {
+                  const serviceData = services.find(s => s.id === selectedService);
+                  await bookingService.startBooking({
+                    pickupLocation: { coords: pickupCoords, address: pickupAddress },
+                    destinationLocation: { coords: destinationCoords, address: destinationAddress },
+                    selectedService: serviceData
+                  });
 
-                // Navigate to ride selection with booking data
-                navigation.navigate('RideSelection', {
-                  pickup: { coords: pickupCoords, address: pickupAddress },
-                  destination: { coords: destinationCoords, address: destinationAddress },
-                  selectedService: selectedService,
-                  serviceData: serviceData
-                });
-              } catch (error) {
-                console.error('Error starting booking:', error);
-                Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
+                  navigation.navigate('RideSelection', {
+                    pickup: { coords: pickupCoords, address: pickupAddress },
+                    destination: { coords: destinationCoords, address: destinationAddress },
+                    selectedService: selectedService,
+                    serviceData: serviceData
+                  });
+                } catch (error) {
+                  console.error('Error starting booking:', error);
+                  Alert.alert('Booking Error', 'Unable to start booking. Please try again.');
+                }
               }
-            }
-          }}
-        >
-          <View style={styles.floatingBookButtonContent}>
-            <Text style={styles.floatingBookButtonText}>{getBookingButtonText()}</Text>
-          </View>
-        </TouchableOpacity>
+            }}
+          >
+            <Text style={styles.primaryBookButtonText}>{getBookingButtonText()}</Text>
+          </TouchableOpacity>
+          
+          {/* Schedule Button - 30% width */}
+          <TouchableOpacity
+            style={styles.scheduleButtonIconOnly}
+            activeOpacity={0.8}
+            onPress={() => {
+              Alert.alert('Schedule Ride', 'Schedule booking feature coming soon!', [
+                { text: 'OK', style: 'default' }
+              ]);
+            }}
+          >
+            <Ionicons name="calendar-outline" size={22} color="#0FD3E3" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Navigation Menu */}
@@ -979,6 +1177,14 @@ const styles = {
     color: '#999999',
     fontWeight: '400',
   },
+  locationTextInput: {
+    fontSize: 16,
+    color: '#000000',
+    fontWeight: '500',
+    padding: 0,
+    margin: 0,
+    minHeight: 24,
+  },
   swapButton: {
     position: 'absolute',
     right: 16,
@@ -1104,19 +1310,23 @@ const styles = {
   },
   currentLocationButton: {
     position: 'absolute',
-    bottom: 20,
+    top: '50%', // Halfway up the map
     right: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: theme.colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#0FD3E3',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    zIndex: 999, // Always visible above bottom sheet
+    marginTop: -28, // Center the button at 50% by offsetting half its height
   },
   
   // BOTTOM SHEET STYLES
@@ -1170,22 +1380,55 @@ const styles = {
     width: 60,
   },
   snapPositionText: {
-    fontSize: 11,
-    color: '#999999',
-    marginTop: 4,
-    fontWeight: '500',
+    fontSize: 13,
+    color: '#666666',
+    marginTop: 6,
+    marginBottom: 4,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.2,
   },
   expandPrompt: {
-    flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
+    marginBottom: 4,
+    gap: 10,
+  },
+  expandInstructionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
+    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: 'rgba(15, 211, 227, 0.05)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(15, 211, 227, 0.2)',
   },
   expandText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
-    color: '#00C851',
+    color: '#0FD3E3',
     textAlign: 'center',
+    letterSpacing: 0.3,
+  },
+  servicePreviewContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(15, 211, 227, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(15, 211, 227, 0.3)',
+  },
+  servicePreviewText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#0FD3E3',
+    letterSpacing: 0.2,
   },
   bottomSheetContent: {
     flex: 1,
@@ -1524,58 +1767,71 @@ const styles = {
     borderWidth: 1,
     borderColor: theme.colors.gray100,
   },
-  // HORIZONTAL SCROLLING QUICK ACTIONS STYLES
-  quickActionsContainer: {
+  // POPULAR DESTINATIONS STYLES
+  popularDestinationsContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
     marginBottom: 12,
+    paddingBottom: 4,
   },
-  quickActionsScroll: {
-    paddingVertical: 12,
+  popularDestinationsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+    marginBottom: 12,
+    paddingHorizontal: 16,
+    letterSpacing: -0.2,
   },
-  quickActionsContent: {
+  popularDestinationsScroll: {
+    paddingVertical: 8,
+  },
+  popularDestinationsContent: {
     paddingHorizontal: 16,
     gap: 16,
   },
-  quickActionItem: {
+  popularDestinationItem: {
     alignItems: 'center',
-    width: 85, // Fixed width for consistent scrolling
-    paddingVertical: 8,
-    paddingHorizontal: 6,
+    width: 90,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     borderRadius: 12,
     backgroundColor: 'transparent',
   },
-  quickActionItemSelected: {
+  popularDestinationItemSelected: {
     backgroundColor: 'rgba(0, 200, 81, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(0, 200, 81, 0.3)',
   },
-  quickActionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  popularDestinationIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowRadius: 3,
+    elevation: 3,
+    // Add padding effect by making the circle larger relative to icon
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
-  quickActionText: {
-    fontSize: 12,
+  popularDestinationText: {
+    fontSize: 11,
     fontWeight: '600',
     color: '#000000',
     textAlign: 'center',
     marginBottom: 2,
+    lineHeight: 14,
   },
-  quickActionDescription: {
+  popularDestinationDescription: {
     fontSize: 9,
     fontWeight: '400',
     color: '#666666',
     textAlign: 'center',
-    lineHeight: 12,
+    lineHeight: 11,
   },
   
   brandSection: {
@@ -1646,6 +1902,29 @@ const styles = {
   suggestionAddress: {
     fontSize: 12,
     color: theme.colors.textSecondary,
+  },
+  suggestionDistance: {
+    fontSize: 12,
+    color: '#999999',
+    fontWeight: '500',
+    minWidth: 60,
+    textAlign: 'right',
+  },
+  noResultsContainer: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+  },
+  noResultsText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666666',
+    marginTop: 8,
+  },
+  noResultsSubtext: {
+    fontSize: 14,
+    color: '#999999',
+    marginTop: 4,
   },
   sectionTitle: {
     ...theme.typography.headlineLarge,
@@ -1913,9 +2192,6 @@ const styles = {
     marginBottom: 20,
   },
   servicesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
     gap: 12,
     paddingHorizontal: 4,
   },
@@ -1937,10 +2213,10 @@ const styles = {
     elevation: 1,
   },
   serviceCardSelected: {
-    borderColor: '#00C851',
-    backgroundColor: '#00C851' + '08',
+    borderColor: '#0FD3E3',
+    backgroundColor: '#0FD3E3' + '08',
     borderWidth: 2,
-    shadowColor: '#00C851',
+    shadowColor: '#0FD3E3',
     shadowOpacity: 0.15,
     elevation: 6,
     transform: [{ scale: 1.02 }],
@@ -1989,6 +2265,188 @@ const styles = {
     textAlign: 'right',
   },
   
+  // FULL-WIDTH SERVICE CARD STYLES
+  serviceCardFullWidth: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#E8E8E8',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    marginBottom: 6,
+    minHeight: 140,
+  },
+  serviceCardFullWidthSelected: {
+    borderColor: '#0FD3E3',
+    backgroundColor: 'rgba(0, 200, 81, 0.06)',
+    borderWidth: 2,
+    shadowColor: '#0FD3E3',
+    shadowOpacity: 0.2,
+    elevation: 8,
+    transform: [{ scale: 1.01 }],
+  },
+  serviceCardDisabled: {
+    backgroundColor: '#F8F8F8',
+    borderColor: '#E0E0E0',
+    opacity: 0.7,
+  },
+  serviceIconContainerFull: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20,
+    marginTop: 2,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  serviceIconDisabled: {
+    backgroundColor: '#F0F0F0',
+  },
+  serviceInfoFull: {
+    flex: 1,
+  },
+  serviceHeaderFull: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  serviceNameFull: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.3,
+    flex: 1,
+    lineHeight: 24,
+    marginRight: 12,
+  },
+  serviceBadgeFull: {
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 8,
+    marginTop: 2,
+    alignSelf: 'flex-start',
+  },
+  serviceBadgeTextFull: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  serviceDescriptionFull: {
+    fontSize: 14,
+    color: '#666666',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  serviceTextDisabled: {
+    color: '#AAAAAA',
+  },
+  serviceFeaturesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 14,
+  },
+  serviceFeature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    borderRadius: 14,
+  },
+  serviceFeatureDisabled: {
+    backgroundColor: '#F0F0F0',
+  },
+  serviceFeatureText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#4CAF50',
+  },
+  serviceMetaFull: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  servicePriceFull: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#0FD3E3',
+  },
+  serviceTrustTagsFull: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  trustTag: {
+    backgroundColor: '#FF6B35',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  trustTagText: {
+    fontSize: 8,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  certifiedTag: {
+    backgroundColor: '#00AA00',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  certifiedTagText: {
+    fontSize: 8,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  tagDisabled: {
+    backgroundColor: '#CCCCCC',
+  },
+  tagTextDisabled: {
+    color: '#FFFFFF',
+  },
+  selectionIndicatorContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
+  selectionIndicator: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#CCCCCC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  selectionIndicatorSelected: {
+    borderColor: '#0FD3E3',
+    backgroundColor: '#0FD3E3',
+  },
+  comingSoonIndicator: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#CCCCCC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8F8F8',
+  },
+  
   // REDESIGNED SERVICE CARDS - Perfect Consistency
   serviceCardCompact: {
     width: '48%',
@@ -2030,7 +2488,7 @@ const styles = {
   servicePriceCompact: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#00C851',
+    color: '#0FD3E3',
     textAlign: 'center',
     marginBottom: 10,
     paddingHorizontal: 4,
@@ -2077,6 +2535,83 @@ const styles = {
     borderTopColor: 'rgba(0, 0, 0, 0.1)',
     zIndex: 99999, // Always on top
     elevation: 50,
+  },
+  ctaButtonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  primaryBookButton: {
+    flex: 1, // Take most of the space
+    backgroundColor: '#000000',
+    borderRadius: 14,
+    paddingVertical: 18,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 58,
+    elevation: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    // Enhanced button appearance
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginRight: 8,
+  },
+  primaryBookButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  scheduleButton: {
+    flex: 0.3, // 30% width
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 58,
+    borderWidth: 2.5,
+    borderColor: '#0FD3E3',
+    elevation: 8,
+    shadowColor: '#0FD3E3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    flexDirection: 'row',
+    gap: 6,
+  },
+  scheduleButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0FD3E3',
+    letterSpacing: 0.3,
+    textShadowColor: 'rgba(0, 200, 81, 0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 1,
+  },
+  scheduleButtonIconOnly: {
+    width: 58, // Square button
+    height: 58,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2.5,
+    borderColor: '#0FD3E3',
+    elevation: 8,
+    shadowColor: '#0FD3E3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
   },
   floatingBookButton: {
     backgroundColor: '#000000', // Uber's pure black

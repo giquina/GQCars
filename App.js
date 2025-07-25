@@ -71,7 +71,7 @@ function MainTabs() {
       <Tab.Screen 
         name="Services" 
         component={ServicesScreen}
-        options={{ title: 'Drivers' }}
+        options={{ title: 'Services' }}
       />
       <Tab.Screen 
         name="Trips" 

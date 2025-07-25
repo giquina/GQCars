@@ -4,7 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-GQCars is a React Native Expo application for premium security transport services. Every driver is a vetted close protection (CP) officer with SIA licensing. The app features professional UI with booking, payment, emergency features, and real-time tracking.
+Armora is a React Native Expo application for premium security transport services. Every driver is a vetted close protection (CP) officer with SIA licensing. The app features professional UI with booking, payment, emergency features, and real-time tracking.
+
+### Brand Identity
+- **App Name**: Armora
+- **Primary Color**: Midnight Navy (#0A1F3D)
+- **Accent Color**: Royal Cyan (#0FD3E3)
+- **Neutral Base**: Arctic Grey (#F4F6F8)
+- **Text Color**: Charcoal (#222222)
+- **Brand Gradient**: Midnight Navy to Royal Cyan
+- **Font Style**: Modern sans-serif (System default with clean styling)
 
 ## Core Development Commands
 
@@ -53,10 +62,10 @@ npx expo start --tunnel   # Use tunnel for network issues
 
 ### Expo Configuration (app.json)
 - **SDK Version**: 53.0.0
-- **Bundle ID**: com.gqcars.app  
+- **Bundle ID**: com.armora.app  
 - **Platforms**: iOS, Android, Web
 - **Orientation**: Portrait only
-- **Primary Color**: #00C851 (green theme)
+- **Primary Color**: #0A1F3D (Midnight Navy - Armora branding)
 
 ### Development Issues & Solutions
 - **Expo Go "Checking for Updates" freeze**: Remove `updates` configuration from app.json during development
@@ -65,8 +74,8 @@ npx expo start --tunnel   # Use tunnel for network issues
 - **Web compatibility**: All components support react-native-web
 
 ### Theme System
-- Primary color: `#00C851` (green)
-- Professional dark theme with gold accents
+- Primary color: `#0A1F3D` (Midnight Navy)
+- Professional Armora theme with Midnight Navy and Royal Cyan accents
 - Centralized theme object in `/theme/` directory
 - All components use theme constants for consistency
 

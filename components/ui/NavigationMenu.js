@@ -43,14 +43,14 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
         navigation.navigate('Emergency');
         break;
       case 'support':
-        Alert.alert('Customer Support', 'Need help? Contact us:\n\n📞 24/7 Hotline: +44 20 1234 5678\n📧 Email: support@gqcars.com\n💬 Live Chat: Available in app', [
+        Alert.alert('Customer Support', 'Need help? Contact us:\n\n📞 24/7 Hotline: +44 20 1234 5678\n📧 Email: support@armora.com\n💬 Live Chat: Available in app', [
           { text: 'Call Now', onPress: () => console.log('Call support') },
           { text: 'Email', onPress: () => console.log('Email support') },
           { text: 'Close', style: 'cancel' }
         ]);
         break;
       case 'about':
-        Alert.alert('About GQCars', 'GQCars - Premium Security Transport\n\nVersion 1.0.0\n\nProviding safe, secure transportation with licensed security professionals since 2024.', [
+        Alert.alert('About Armora', 'Armora - Premium Security Transport\n\nVersion 1.0.0\n\nProviding safe, secure transportation with licensed security professionals since 2024.', [
           { text: 'OK', style: 'default' }
         ]);
         break;
@@ -148,7 +148,7 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
         },
         {
           id: 'about',
-          title: 'About GQCars',
+          title: 'About Armora',
           icon: 'information-circle-outline',
           description: 'App version and company info',
           action: 'about'
@@ -178,10 +178,10 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={styles.logoContainer}>
-              <Ionicons name="car-sport" size={24} color={theme.colors.primary} />
+              <Ionicons name="shield-checkmark" size={24} color={theme.colors.secondary} />
             </View>
             <View>
-              <Text style={styles.appTitle}>GQCars</Text>
+              <Text style={styles.appTitle}>Armora</Text>
               <Text style={styles.appSubtitle}>Security Transport</Text>
             </View>
           </View>
@@ -205,7 +205,7 @@ const NavigationMenu = ({ visible, onClose, navigation, assessmentCompleted = tr
                 >
                   <View style={styles.menuItemLeft}>
                     <View style={styles.menuItemIcon}>
-                      <Ionicons name={item.icon} size={22} color={item.isEmergency ? theme.colors.error : theme.colors.primary} />
+                      <Ionicons name={item.icon} size={22} color={item.isEmergency ? theme.colors.error : theme.colors.secondary} />
                       {item.showBadge && (
                         <View style={styles.redBadge}>
                           <Text style={styles.redBadgeText}>!</Text>
@@ -272,10 +272,12 @@ const styles = {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.secondary + '20',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: theme.spacing.md,
+    borderWidth: 2,
+    borderColor: theme.colors.secondary + '30',
   },
   appTitle: {
     fontSize: 20,
