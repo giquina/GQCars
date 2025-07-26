@@ -40,8 +40,8 @@ const ServicesScreen = ({ navigation }) => {
       active: true,
       minimumFare: 50.00,
       features: ['SIA-licensed close protection officers', 'TFL approved private hire vehicles', 'Minimum £50 per journey', 'Available for immediate or pre-booked trips'],
-      detailedDescription: 'Our Personal Security Driver service combines professional close protection with private hire transport. All drivers are SIA-licensed officers operating TFL-approved vehicles, providing secure transport for both everyday journeys and high-risk situations.',
-      caseStudy: 'A business executive across South East England uses our service for both daily commutes and sensitive meetings. Our SIA-licensed driver provides professional security awareness while maintaining the convenience of private hire transport, serving London, Greater London, Watford and surrounding areas.'
+      detailedDescription: 'Our Personal Security Driver service combines professional close protection with private hire transport. A-Drivers are SIA-licensed officers operating TFL-approved vehicles, providing secure transport for both everyday journeys and high-risk situations.',
+      caseStudy: 'A business executive across the UK uses our service for both daily commutes and sensitive meetings. A-Drivers provide professional security awareness while maintaining the convenience of private hire transport, serving all major UK cities and airports nationwide.'
     },
     
     // INACTIVE SERVICES (Coming Soon)
@@ -276,7 +276,7 @@ const ServicesScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Personal Security Drivers On Demand</Text>
-        <Text style={styles.headerSubtitle}>Professional private hire with vetted close protection officers • Available 24/7 across South East England, London & Greater London</Text>
+        <Text style={styles.headerSubtitle}>Professional private hire with vetted close protection officers • Available 24/7 all over the UK</Text>
       </View>
 
       {/* Toggle Tabs */}
@@ -305,7 +305,7 @@ const ServicesScreen = ({ navigation }) => {
             color={activeTab === 'drivers' ? '#FFFFFF' : '#666666'} 
           />
           <Text style={[styles.toggleText, activeTab === 'drivers' && styles.toggleTextActive]}>
-            Our Drivers
+            A-Drivers
           </Text>
         </TouchableOpacity>
       </View>
@@ -883,7 +883,7 @@ const styles = {
   servicePrice: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#0FD3E3',
+    color: '#000000',
     lineHeight: 24,
   },
   priceLabel: {

@@ -140,7 +140,7 @@ const HomeScreen = ({ navigation }) => {
       icon: 'airplane',
       color: '#2196F3',
       description: 'South terminal',
-      address: 'Gatwick Airport, Surrey',
+      address: 'Gatwick Airport, London',
       popular: true
     },
     {
@@ -209,6 +209,20 @@ const HomeScreen = ({ navigation }) => {
       active: false,
       minimumFare: 55.00,
       features: ['Flight Tracking', 'Meet & Greet', 'Baggage Assistance'],
+      popular: false
+    },
+    {
+      id: 'armored-transport',
+      name: 'Armored Security Transport',
+      basePrice: 150.00,
+      description: 'Ultimate protection with armored vehicles and tactical teams',
+      color: '#0A1F3D',
+      icon: 'shield-outline',
+      badge: 'Coming Soon',
+      badgeColor: '#FF9800',
+      active: false,
+      minimumFare: 150.00,
+      features: ['Armored Vehicles', 'Tactical Teams', 'Military-Grade Protection'],
       popular: false
     }
   ];
@@ -856,7 +870,6 @@ const HomeScreen = ({ navigation }) => {
 
           {/* Service Options - Single Full-Width Cards */}
           <View style={styles.servicesSection}>
-            <Text style={styles.servicesTitle}>Choose Your Service</Text>
             <View style={styles.servicesList}>
               {services.map((service) => (
                 <TouchableOpacity 
@@ -978,7 +991,7 @@ const HomeScreen = ({ navigation }) => {
           {/* Armora Brand Section - Moved below services */}
           <View style={styles.brandSection}>
             <Text style={styles.brandTitle}>Armora - Private Hire with Security Professionals</Text>
-            <Text style={styles.brandSubtitle}>TFL-approved minicab service across South East England • All drivers are SIA-licensed close protection officers</Text>
+            <Text style={styles.brandSubtitle}>Professional transport service all over the UK • All drivers are SIA-licensed close protection officers</Text>
           </View>
 
           {/* Extra padding to prevent content being hidden behind fixed bottom button */}
@@ -1786,14 +1799,15 @@ const styles = {
     paddingVertical: 8,
   },
   popularDestinationsContent: {
-    paddingHorizontal: 16,
-    gap: 16,
+    paddingLeft: 16,
+    paddingRight: 8, // Reduced right padding to show partial next item
+    gap: 12, // Reduced gap to fit more items
   },
   popularDestinationItem: {
     alignItems: 'center',
-    width: 90,
+    width: 75, // Reduced from 90 to show more items and partial visibility
     paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingHorizontal: 6, // Slightly reduced padding
     borderRadius: 12,
     backgroundColor: 'transparent',
   },
@@ -2383,7 +2397,7 @@ const styles = {
   servicePriceFull: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0FD3E3',
+    color: '#000000',
   },
   serviceTrustTagsFull: {
     flexDirection: 'row',
@@ -2488,7 +2502,7 @@ const styles = {
   servicePriceCompact: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#0FD3E3',
+    color: '#000000',
     textAlign: 'center',
     marginBottom: 10,
     paddingHorizontal: 4,

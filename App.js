@@ -22,6 +22,8 @@ import EmergencyScreen from './screens/EmergencyScreen';
 import EmergencyContactsScreen from './screens/EmergencyContactsScreen';
 import TrackRideScreen from './screens/TrackRideScreen';
 import BookingCompleteScreen from './screens/BookingCompleteScreen';
+import AboutScreen from './screens/AboutScreen';
+import RecruitmentScreen from './screens/RecruitmentScreen';
 import theme from './theme';
 import notificationService from './services/NotificationService';
 import { BookingProvider } from './context/BookingContext';
@@ -249,6 +251,14 @@ export default function App() {
         <Stack.Screen 
           name="Profile" 
           component={AccountScreen}
+        />
+        <Stack.Screen 
+          name="About" 
+          component={AboutScreen}
+        />
+        <Stack.Screen 
+          name="Recruitment" 
+          component={RecruitmentScreen}
         />
       </Stack.Navigator>
       </NavigationContainer>
